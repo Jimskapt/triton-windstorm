@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>Triton Windstorm</title>
+</head>
+
+<body>
+	<h1>Triton Windstorm</h1>
+
+	<noscript>
+		<p class="message error">This webapp needs Javascript enabled in your browser order to works.</p>
+	</noscript>
+
+	<section id="app"></section>
+
+	<script type="module">
+		import init from '/pkg/package.js';
+		init('/pkg/package_bg.wasm');
+	</script>
+</body>
+
+</html>
