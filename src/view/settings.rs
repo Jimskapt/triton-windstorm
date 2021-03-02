@@ -6,7 +6,7 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 		id: format!("{}", uuid::Uuid::new_v4()),
 		name: String::from(""),
 		value: None,
-		max: 5,
+		max: 5.0,
 		observations: None,
 	}]);
 	let settings_subjects_fields = temp.iter().map(|subject| {

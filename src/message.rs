@@ -117,7 +117,7 @@ pub fn update(
 						id: format!("{}", uuid::Uuid::new_v4()),
 						name,
 						value: None,
-						max: 5,
+						max: 5.0,
 						observations: None,
 					};
 
@@ -138,16 +138,16 @@ pub fn update(
 				.find(|subject| subject.id == id)
 			{
 				subject.value = match value {
-					Some(value) => Some(std::str::FromStr::from_str(&value).unwrap_or(0) as usize),
+					Some(value) => Some(std::str::FromStr::from_str(&value).unwrap_or(0.0) as f64),
 					None => None,
 				};
 			}
 		}
 		Message::SetSubjectMax { id, max } => {
-			let value: Result<isize, _> = max.parse();
+			let value: Result<f64, _> = max.parse();
 
 			if let Ok(value) = value {
-				if value >= 1 && value <= isize::max_value() {
+				if value >= 1.0 && value <= f64::MAX {
 					let max = std::convert::TryInto::try_into(value).unwrap();
 
 					match model
@@ -248,7 +248,7 @@ pub fn update(
 									subjects.push(crate::model::Subject {
 										id: String::from(id),
 										name: value.clone(),
-										max: 5,
+										max: 5.0,
 										value: None,
 										observations: None,
 									});
@@ -282,33 +282,55 @@ pub fn update(
 				subjects.push(crate::model::Subject {
 					id: format!("{}", uuid::Uuid::new_v4()),
 					name: String::from("mood"),
-					max: 5,
+					max: 5.0,
 					value: None,
 					observations: None,
 				});
 			}
+
+			let date = chrono::NaiveDate::parse_from_str(&day, "%Y-%m-%d").unwrap_or_else(|_| {
+				orders.send_msg(Message::SetDateToday);
+				let today = chrono::offset::Local::today();
+				chrono::NaiveDate::from_ymd(
+					chrono::Datelike::year(&today),
+					chrono::Datelike::month(&today),
+					chrono::Datelike::day(&today),
+				)
+			});
+			let default_rate = crate::model::Rate {
+				date,
+				subjects: subjects.clone(),
+			};
 
 			model.pending_rate = match storage
 				.get_item(&format!("{}record_{}", crate::storage::STORAGE_PREFIX, day))
 				.unwrap()
 			{
 				Some(res) => {
-					serde_json::from_str(&res).unwrap() // TODO : check errors ?
-					                // TODO : merge new subjects ?
+					match serde_json::from_str(&res) as serde_json::Result<crate::model::Rate> {
+						Ok(mut data) => {
+							for subject in subjects {
+								match data.subjects.iter_mut().find(|e| e.id == subject.id) {
+									Some(data_subject) => {
+										data_subject.name = subject.name;
+										if let Some(val) = data_subject.value {
+											data_subject.value =
+												Some((val / data_subject.max) * subject.max);
+										}
+										data_subject.max = subject.max;
+									}
+									None => {
+										data.subjects.push(subject);
+									}
+								}
+							}
+
+							data
+						}
+						Err(_) => default_rate,
+					}
 				}
-				None => {
-					let date =
-						chrono::NaiveDate::parse_from_str(&day, "%Y-%m-%d").unwrap_or_else(|_| {
-							orders.send_msg(Message::SetDateToday);
-							let today = chrono::offset::Local::today();
-							chrono::NaiveDate::from_ymd(
-								chrono::Datelike::year(&today),
-								chrono::Datelike::month(&today),
-								chrono::Datelike::day(&today),
-							)
-						});
-					crate::model::Rate { date, subjects }
-				}
+				None => default_rate,
 			};
 
 			model

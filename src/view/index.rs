@@ -13,6 +13,7 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 					attrs![
 						At::Type => "range",
 						At::Min => 0,
+						At::Step => 0.1,
 						At::Max => subject.max,
 						At::Value => subject.value.unwrap_or(subject.max),
 					],
@@ -24,7 +25,7 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 					}),
 				]],
 				td![format!(
-					"{} / {} ",
+					"{:04.1} / {:02} ",
 					subject.value.unwrap_or(subject.max),
 					subject.max
 				)],

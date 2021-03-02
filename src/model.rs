@@ -16,8 +16,8 @@ pub struct Rate {
 pub struct Subject {
 	pub id: String,
 	pub name: String,
-	pub value: Option<usize>,
-	pub max: usize,
+	pub value: Option<f64>,
+	pub max: f64,
 	pub observations: Option<String>,
 }
 
