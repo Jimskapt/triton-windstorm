@@ -4,6 +4,7 @@ pub struct Model {
 	pub show_unallowed_save: bool,
 	pub pending_rate: Rate,
 	pub panel: AppPanel,
+	pub dark_theme: bool,
 }
 
 #[derive(serde::Serialize, serde::Deserialize)]
@@ -75,5 +76,6 @@ pub fn init(
 		show_unallowed_save,
 		pending_rate,
 		panel: AppPanel::Index,
+		dark_theme: false,
 	};
 }

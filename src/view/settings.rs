@@ -57,13 +57,13 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 		];
 	});
 
-	return article![
+	return div![
 		h2![crate::locale::get_simple(&model.locale, "settings")],
-		p![
-			raw!(&format!(
-				"{} (locale) : ",
-				crate::locale::get_simple(&model.locale, "locale"),
-			)),
+		h3![format!(
+			"{} (locale)",
+			crate::locale::get_simple(&model.locale, "locale"),
+		)],
+		article![
 			button![
 				"EN",
 				ev(Ev::Click, |_| crate::message::Message::SetLocale {
@@ -78,19 +78,19 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 				}),
 			],
 		],
-		p![format!(
-			"{} :",
-			crate::locale::get_simple(&model.locale, "subjects")
-		)],
-		settings_subjects_fields,
-		p![input![attrs![
-			At::Type => "submit",
-			At::Value => crate::locale::get_simple(&model.locale, "save"),
-		],],],
-		p!(format!(
-			"{} : {}",
-			crate::locale::get_simple(&model.locale, "app-version"),
-			env!("CARGO_PKG_VERSION")
-		)),
+		h3![crate::locale::get_simple(&model.locale, "subjects")],
+		article![
+			settings_subjects_fields,
+			hr![],
+			input![
+				attrs![
+					At::Type => "submit",
+					At::Value => crate::locale::get_simple(&model.locale, "save"),
+				],
+				C!["primary",],
+			],
+		],
+		h3![crate::locale::get_simple(&model.locale, "app-version")],
+		article![env!("CARGO_PKG_VERSION")],
 	];
 }

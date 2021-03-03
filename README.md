@@ -4,9 +4,9 @@ A rate-my-day app.
 
 ## 1. Improvments (TODO-list)
 
-- CSS design
 - crypt data
 - graphs and statistics
+- export / import data
 
 ## 2. Edit / compile this App
 

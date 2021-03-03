@@ -62,9 +62,9 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 	let date_for_previous = model.pending_rate.date.clone();
 	let date_for_next = model.pending_rate.date.clone();
 
-	return article![
+	return div![
 		h2![crate::locale::get_simple(&model.locale, "rate-a-day")],
-		p![
+		article![
 			button![
 				attrs![
 					At::Type => "date",
@@ -124,21 +124,27 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 				crate::locale::get_simple(&model.locale, "today"),
 			],
 		],
-		table![notation_subjects,],
-		input![
-			attrs![
-				At::Type => "submit",
-				At::Value => crate::locale::get_simple(&model.locale, "save"),
+		article![
+			table![notation_subjects,],
+			hr![],
+			p![
+				input![
+					attrs![
+						At::Type => "submit",
+						At::Value => crate::locale::get_simple(&model.locale, "save"),
+					],
+					C!["primary",],
+					ev(Ev::Click, |_| crate::message::Message::SaveRate),
+				],
+				raw!(" "),
+				input![
+					attrs![
+						At::Type => "reset",
+						At::Value => crate::locale::get_simple(&model.locale, "reset"),
+					],
+					ev(Ev::Click, |_| crate::message::Message::ResetSubjects),
+				],
 			],
-			ev(Ev::Click, |_| crate::message::Message::SaveRate),
-		],
-		raw!(" "),
-		input![
-			attrs![
-				At::Type => "reset",
-				At::Value => crate::locale::get_simple(&model.locale, "reset"),
-			],
-			ev(Ev::Click, |_| crate::message::Message::ResetSubjects),
 		],
 	];
 }

@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+	@apply tw-bg-gray-50;
+}
+
+article {
+	@apply tw-mx-8 tw-my-8 tw-px-8 tw-py-4 tw-bg-white tw-shadow-lg;
+}
+
+header {
+	@apply tw-py-2 tw-bg-white tw-shadow-lg tw-fixed tw-w-screen;
+}
+
+header nav {
+	@apply tw-inline;
+}
+
+header nav a {
+	@apply tw-mx-1 hover:tw-border-b-2 hover:tw-border-current-500;
+}
+
+main {
+	@apply tw-pt-20;
+}
+
+h1, h2, h3 {
+	@apply tw-mx-8;
+}
+
+h1, h2 {
+	@apply tw-font-black;
+}
+
+header h1 {
+	@apply tw-text-3xl tw-inline;
+}
+
+h2 {
+	@apply tw-text-2xl;
+}
+
+h3 {
+	@apply tw-text-xl;
+}
+
+hr {
+	@apply tw-my-4;
+}
+
+button, input[type=button], input[type=submit], input[type=reset], input[type=text], input[type=number], input[type=date] {
+	@apply tw-py-0.5 tw-m-1 tw-rounded-sm tw-border tw-border-solid tw-bg-none;
+}
+
+button, input[type=button], input[type=submit], input[type=reset] {
+	@apply tw-px-4 tw-text-sm tw-font-bold tw-cursor-pointer tw-border-current-500 hover:tw-bg-current-200;
+}
+
+input[type=text], input[type=number], input[type=date] {
+	@apply tw-px-2 focus:tw-border-primary-500 focus:tw-shadow-inner focus:tw-outline-none;
+}
+
+.primary {
+	@apply tw-bg-primary-500 tw-border-primary-500 tw-text-primary hover:tw-bg-primary-800 !important;
+}

@@ -1,0 +1,21 @@
+{
+  "scripts": {
+    "watch-tw": "onchange ./src/*.sass ./src/view/*.rs ./tailwind.config.js -- npm run build-tw",
+    "build-tw": "node node_modules/tailwindcss-cli build ./src/index.sass -o ./index.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jimskapt/triton-windstorm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Jimskapt/triton-windstorm/issues"
+  },
+  "homepage": "https://github.com/Jimskapt/triton-windstorm#readme",
+  "devDependencies": {
+    "autoprefixer": "^10",
+    "onchange": "^7",
+    "postcss": "^8",
+    "tailwindcss": "^2",
+    "tailwindcss-cli": "^0"
+  }
+}
