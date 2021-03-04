@@ -13,51 +13,59 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 		let id_subject = subject.id.clone();
 		let id_max = subject.id.clone();
 
-		return nodes![
+		return div![
+			C!["subject"],
 			label![
-				format!("{} : ", crate::locale::get_simple(&model.locale, "name")),
-				input![
-					attrs![
-						At::Type => "text",
-						At::Value => subject.name,
-					],
-					ev(Ev::Blur, move |event| {
-						let target = wasm_bindgen::JsCast::dyn_into::<web_sys::HtmlInputElement>(
-							event.target().unwrap(),
-						)
-						.unwrap();
-						crate::message::Message::SetSubjectName {
-							id: id_subject,
-							name: target.value(),
-						}
-					}),
+				attrs![
+					At::For => format!("name-{}", &subject.id),
 				],
+				crate::locale::get_simple(&model.locale, "name"),
 			],
-			raw!(" "),
+			input![
+				attrs![
+					At::Type => "text",
+					At::Value => subject.name,
+					At::Id => format!("name-{}", &subject.id),
+				],
+				ev(Ev::Blur, move |event| {
+					let target = wasm_bindgen::JsCast::dyn_into::<web_sys::HtmlInputElement>(
+						event.target().unwrap(),
+					)
+					.unwrap();
+					crate::message::Message::SetSubjectName {
+						id: id_subject,
+						name: target.value(),
+					}
+				}),
+			],
 			label![
-				format!("{} : ", crate::locale::get_simple(&model.locale, "max")),
-				input![
-					attrs![
-						At::Type => "number",
-						At::Value => subject.max,
-					],
-					ev(Ev::Change, move |event| {
-						let target = wasm_bindgen::JsCast::dyn_into::<web_sys::HtmlInputElement>(
-							event.target().unwrap(),
-						)
-						.unwrap();
-						crate::message::Message::SetSubjectMax {
-							id: id_max,
-							max: target.value(),
-						}
-					}),
+				attrs![
+					At::For => format!("max-{}", &subject.id),
 				],
+				crate::locale::get_simple(&model.locale, "max"),
 			],
-			br![],
+			input![
+				attrs![
+					At::Type => "number",
+					At::Value => subject.max,
+					At::Id => format!("max-{}", &subject.id),
+				],
+				ev(Ev::Change, move |event| {
+					let target = wasm_bindgen::JsCast::dyn_into::<web_sys::HtmlInputElement>(
+						event.target().unwrap(),
+					)
+					.unwrap();
+					crate::message::Message::SetSubjectMax {
+						id: id_max,
+						max: target.value(),
+					}
+				}),
+			],
 		];
 	});
 
 	return div![
+		C!["settings_page"],
 		h2![crate::locale::get_simple(&model.locale, "settings")],
 		h3![format!(
 			"{} (locale)",
@@ -82,12 +90,15 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 		article![
 			settings_subjects_fields,
 			hr![],
-			input![
-				attrs![
-					At::Type => "submit",
-					At::Value => crate::locale::get_simple(&model.locale, "save"),
+			p![
+				C!["call_to_action"],
+				input![
+					attrs![
+						At::Type => "submit",
+						At::Value => crate::locale::get_simple(&model.locale, "save"),
+					],
+					C!["primary", "tw-col-span-12"],
 				],
-				C!["primary",],
 			],
 		],
 		h3![crate::locale::get_simple(&model.locale, "app-version")],
