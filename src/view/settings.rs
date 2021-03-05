@@ -73,6 +73,9 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 		)],
 		article![
 			button![
+				attrs![
+					At::Type => "button",
+				],
 				"EN",
 				ev(Ev::Click, |_| crate::message::Message::SetLocale {
 					locale: String::from("en-US")
@@ -80,6 +83,9 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 			],
 			raw!(" "),
 			button![
+				attrs![
+					At::Type => "button",
+				],
 				"FR",
 				ev(Ev::Click, |_| crate::message::Message::SetLocale {
 					locale: String::from("fr-FR")
@@ -89,6 +95,9 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 		h3![crate::locale::get_simple(&model.locale, "theme")],
 		article![
 			button![
+				attrs![
+					At::Type => "button",
+				],
 				crate::locale::get_simple(&model.locale, "light-theme"),
 				ev(Ev::Click, |_| crate::message::Message::SetDarkTheme {
 					value: false,
@@ -96,6 +105,9 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 			],
 			raw!(" "),
 			button![
+				attrs![
+					At::Type => "button",
+				],
 				crate::locale::get_simple(&model.locale, "dark-theme"),
 				ev(Ev::Click, |_| crate::message::Message::SetDarkTheme {
 					value: true,
@@ -105,7 +117,6 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 		h3![crate::locale::get_simple(&model.locale, "subjects")],
 		article![
 			settings_subjects_fields,
-			hr![],
 			p![
 				C!["call_to_action"],
 				input![

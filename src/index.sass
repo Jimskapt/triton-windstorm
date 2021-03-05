@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-	@apply tw-bg-gray-50 dark:tw-bg-gray-900;
+	@apply tw-bg-gray-100 dark:tw-bg-gray-900;
 }
 
 article, header {
@@ -83,7 +83,7 @@ input[type=text], input[type=number], input[type=date], textarea {
 }
 
 .call_to_action {
-	@apply tw-grid tw-gap-1 tw-grid-cols-12;
+	@apply tw-mt-4 tw-grid tw-gap-2 tw-grid-cols-12;
 }
 
 .index_page .subject {
@@ -136,4 +136,8 @@ input[type=text], input[type=number], input[type=date], textarea {
 
 .settings_page .subject input {
 	@apply tw-col-span-10 sm:tw-col-span-5;
+}
+
+article.message.warning {
+	@apply tw-bg-yellow-200 dark:tw-bg-yellow-900;
 }

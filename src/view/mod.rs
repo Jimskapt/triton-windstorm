@@ -10,23 +10,6 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 				"tw-dark",
 			]
 		],
-		IF![
-			model.show_unallowed_save => p![
-				C!["message", "warning"],
-				span![crate::locale::get_simple(&model.locale, "unallowed-save")],
-				raw!(" "),
-				button![
-					C!["primary"],
-					crate::locale::get_simple(&model.locale, "allow"),
-					ev(Ev::Click, |_| crate::message::Message::AllowStorage),
-				],
-				raw!(" "),
-				button![
-					crate::locale::get_simple(&model.locale, "dismiss"),
-					ev(Ev::Click, |_| crate::message::Message::DismissStorageWarning),
-				],
-			]
-		],
 		header![
 			h1!["Triton Windstorm"],
 			nav![
@@ -51,9 +34,30 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 				],
 			],
 		],
-		main![match model.panel {
-			crate::model::AppPanel::Index => index::view(model),
-			crate::model::AppPanel::Settings => settings::view(model),
-		},],
+		main![
+			IF![
+				model.show_unallowed_save => article![
+					C!["message", "warning"],
+					span![crate::locale::get_simple(&model.locale, "unallowed-save")],
+					p![
+						C!["call_to_action"],
+						button![
+							C!["primary", "tw-col-span-6"],
+							crate::locale::get_simple(&model.locale, "allow"),
+							ev(Ev::Click, |_| crate::message::Message::AllowStorage),
+						],
+						button![
+							C!["tw-col-span-6"],
+							crate::locale::get_simple(&model.locale, "dismiss"),
+							ev(Ev::Click, |_| crate::message::Message::DismissStorageWarning),
+						],
+					],
+				]
+			],
+			match model.panel {
+				crate::model::AppPanel::Index => index::view(model),
+				crate::model::AppPanel::Settings => settings::view(model),
+			},
+		],
 	];
 }

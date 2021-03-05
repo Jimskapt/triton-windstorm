@@ -58,7 +58,18 @@ pub fn init(
 	let allowed_save = crate::storage::get_allowed(&storage) == "true";
 	let show_unallowed_save = crate::storage::get_allowed(&storage) != "true";
 
-	let dark = crate::storage::get_dark(&storage) == "true";
+	let dark = match storage.get_item(&format!("{}dark_theme", crate::storage::STORAGE_PREFIX)) {
+		Ok(Some(value)) => value == "true",
+		_ => {
+			match web_sys::window()
+				.unwrap()
+				.match_media("(prefers-color-scheme: dark)")
+			{
+				Ok(Some(res)) => res.matches(),
+				_ => false,
+			}
+		}
+	};
 	orders.after_next_render(move |_| crate::message::Message::SetDarkTheme { value: dark });
 
 	let today = chrono::offset::Local::today();

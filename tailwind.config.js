@@ -12,11 +12,12 @@ module.exports = {
       transparent: 'transparent',
       primary: {
         500: '#0078d4',
-        800: '#106ebe',
+        800: '#0063b1',
       },
       gray: colors.coolGray,
       black: colors.black,
       white: colors.white,
+      yellow: colors.amber,
     },
     textColor: {
       black: colors.black,
