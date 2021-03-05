@@ -343,16 +343,6 @@ pub fn update(
 				value: serde_json::to_string(&model.pending_rate).unwrap(),
 			});
 		}
-		Message::RemoveSingleRate { id } => {
-			orders.send_msg(Message::SetSubjectValue {
-				id: id.clone(),
-				value: None,
-			});
-			orders.send_msg(Message::SetSubjectObservation {
-				id,
-				observation: None,
-			});
-		}
 		Message::SetDarkTheme { value } => {
 			model.dark_theme = value;
 
