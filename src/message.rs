@@ -32,18 +32,17 @@ pub enum Message {
 		id: String,
 		observation: Option<String>,
 	},
-	RemoveSingleRate {
-		id: String,
-	},
 	ResetSubject {
 		id: String,
 	},
 	ResetSubjects,
-
 	SetRateDay {
 		day: String,
 	},
 	SaveRate,
+	SetDarkTheme {
+		value: bool,
+	},
 }
 
 pub fn update(
@@ -353,6 +352,33 @@ pub fn update(
 				id,
 				observation: None,
 			});
+		}
+		Message::SetDarkTheme { value } => {
+			model.dark_theme = value;
+
+			orders.send_msg(Message::SaveStorage {
+				key: String::from("dark_theme"),
+				value: String::from(match value {
+					true => "true",
+					false => "false",
+				}),
+			});
+
+			let html_classes = seed::prelude::wasm_bindgen::JsCast::dyn_into::<web_sys::Element>(
+				seed::prelude::web_sys::window()
+					.unwrap()
+					.document()
+					.unwrap()
+					.document_element()
+					.unwrap(),
+			)
+			.unwrap()
+			.class_list();
+			if value {
+				html_classes.add_1("tw-dark").unwrap();
+			} else {
+				html_classes.remove_1("tw-dark").unwrap();
+			}
 		}
 	}
 }

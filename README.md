@@ -2,13 +2,7 @@
 
 A rate-my-day app.
 
-## 1. Improvments (TODO-list)
-
-- crypt data
-- graphs and statistics
-- export / import data
-
-## 2. Edit / compile this App
+## 1. Edit / compile this App
 
 This app is built in Rust and WebAssembly thanks to seed.rs framework.
 

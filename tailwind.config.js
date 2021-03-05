@@ -9,22 +9,26 @@ module.exports = {
   theme: {
     extend: {},
     colors: {
-      current: colors.coolGray,
+      transparent: 'transparent',
       primary: {
         500: '#0078d4',
         800: '#106ebe',
       },
       gray: colors.coolGray,
+      black: colors.black,
       white: colors.white,
     },
     textColor: {
-      primary: colors.white,
+      black: colors.black,
+      gray: {
+        50: colors.coolGray[50],
+      },
     }
   },
   variants: {
     extend: {
       borderWidth: ['hover'],
-      // borderColor: ['active'],
+      ringWidth: ['active'],
     },
   },
   plugins: [],

@@ -86,6 +86,22 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 				}),
 			],
 		],
+		h3![crate::locale::get_simple(&model.locale, "theme")],
+		article![
+			button![
+				crate::locale::get_simple(&model.locale, "light-theme"),
+				ev(Ev::Click, |_| crate::message::Message::SetDarkTheme {
+					value: false,
+				}),
+			],
+			raw!(" "),
+			button![
+				crate::locale::get_simple(&model.locale, "dark-theme"),
+				ev(Ev::Click, |_| crate::message::Message::SetDarkTheme {
+					value: true,
+				}),
+			],
+		],
 		h3![crate::locale::get_simple(&model.locale, "subjects")],
 		article![
 			settings_subjects_fields,

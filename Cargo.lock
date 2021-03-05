@@ -385,9 +385,9 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
-version = "0.2.87"
+version = "0.2.88"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "265d751d31d6780a3f956bb5b8022feba2d94eeee5a84ba64f4212eedca42213"
+checksum = "03b07a082330a35e43f63177cc01689da34fbffa0105e1246cf0311472cac73a"
 
 [[package]]
 name = "log"
@@ -794,9 +794,9 @@ checksum = "213701ba3370744dcd1a12960caa4843b3d68b4d1c0a5d575e0d65b2ee9d16c0"
 
 [[package]]
 name = "syn"
-version = "1.0.60"
+version = "1.0.61"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c700597eca8a5a762beb35753ef6b94df201c81cca676604f547495a0d7f0081"
+checksum = "ed22b90a0e734a23a7610f4283ac9e5acfb96cbb30dfefa540d66f866f1c09c5"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -888,7 +888,7 @@ checksum = "29738eedb4388d9ea620eeab9384884fc3f06f586a2eddb56bedc5885126c7c1"
 
 [[package]]
 name = "triton_windstorm"
-version = "1.3.0"
+version = "1.4.0"
 dependencies = [
  "chrono",
  "console_error_panic_hook",
@@ -899,6 +899,7 @@ dependencies = [
  "unic-langid",
  "uuid",
  "wasm-bindgen-test",
+ "web-sys",
 ]
 
 [[package]]

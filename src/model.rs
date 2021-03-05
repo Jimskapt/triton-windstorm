@@ -58,6 +58,9 @@ pub fn init(
 	let allowed_save = crate::storage::get_allowed(&storage) == "true";
 	let show_unallowed_save = crate::storage::get_allowed(&storage) != "true";
 
+	let dark = crate::storage::get_dark(&storage) == "true";
+	orders.after_next_render(move |_| crate::message::Message::SetDarkTheme { value: dark });
+
 	let today = chrono::offset::Local::today();
 	let pending_rate = Rate {
 		date: chrono::NaiveDate::from_ymd(

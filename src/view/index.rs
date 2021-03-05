@@ -63,14 +63,10 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 	let date_for_next = model.pending_rate.date.clone();
 
 	return div![
-		C![
-			"index_page",
-		],
+		C!["index_page",],
 		h2![crate::locale::get_simple(&model.locale, "rate-a-day")],
 		article![
-			C![
-				"date_selection"
-			],
+			C!["date_selection"],
 			button![
 				attrs![
 					At::Type => "button",

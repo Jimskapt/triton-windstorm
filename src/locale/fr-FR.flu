@@ -16,3 +16,6 @@ observation = observation
 app = app
 version = version
 app-version = { version } de l'{ app }
+theme = thème
+dark-theme = sombre
+light-theme = lumineux
