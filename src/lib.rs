@@ -11,7 +11,9 @@ mod view;
 
 #[wasm_bindgen(start)]
 pub fn start() {
-	console_error_panic_hook::set_once();
+	if cfg!(debug_assertions) {
+		console_error_panic_hook::set_once();
+	}
 
 	seed::App::start("app", model::init, message::update, view::view);
 }

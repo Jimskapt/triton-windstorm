@@ -1,5 +1,6 @@
 use seed::{prelude::*, *};
 
+mod data;
 mod index;
 mod settings;
 
@@ -22,7 +23,6 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 						panel: crate::model::AppPanel::Index
 					}),
 				],
-				raw!(" "),
 				a![
 					attrs![
 						At::Href => "#/settings",
@@ -30,6 +30,15 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 					crate::locale::get_simple(&model.locale, "settings"),
 					ev(Ev::Click, |_| crate::message::Message::GoToPanel {
 						panel: crate::model::AppPanel::Settings
+					}),
+				],
+				a![
+					attrs![
+						At::Href => "#/data",
+					],
+					crate::locale::get_simple(&model.locale, "your-data"),
+					ev(Ev::Click, |_| crate::message::Message::GoToPanel {
+						panel: crate::model::AppPanel::ExportData
 					}),
 				],
 			],
@@ -57,6 +66,7 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 			match model.panel {
 				crate::model::AppPanel::Index => index::view(model),
 				crate::model::AppPanel::Settings => settings::view(model),
+				crate::model::AppPanel::ExportData => data::view(model),
 			},
 		],
 	];

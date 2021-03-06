@@ -277,16 +277,6 @@ pub fn update(
 				}
 			}
 
-			if subjects.is_empty() {
-				subjects.push(crate::model::Subject {
-					id: format!("{}", uuid::Uuid::new_v4()),
-					name: String::from("mood"),
-					max: 5.0,
-					value: None,
-					observations: None,
-				});
-			}
-
 			let date = chrono::NaiveDate::parse_from_str(&day, "%Y-%m-%d").unwrap_or_else(|_| {
 				orders.send_msg(Message::SetDateToday);
 				let today = chrono::offset::Local::today();
@@ -301,36 +291,50 @@ pub fn update(
 				subjects: subjects.clone(),
 			};
 
-			model.pending_rate = match storage
-				.get_item(&format!("{}record_{}", crate::storage::STORAGE_PREFIX, day))
-				.unwrap()
-			{
-				Some(res) => {
-					match serde_json::from_str(&res) as serde_json::Result<crate::model::Rate> {
-						Ok(mut data) => {
-							for subject in subjects {
-								match data.subjects.iter_mut().find(|e| e.id == subject.id) {
-									Some(data_subject) => {
-										data_subject.name = subject.name;
-										if let Some(val) = data_subject.value {
-											data_subject.value =
-												Some((val / data_subject.max) * subject.max);
-										}
-										data_subject.max = subject.max;
-									}
-									None => {
-										data.subjects.push(subject);
-									}
-								}
-							}
-
-							data
+			let mut rate = if let Some(result) = model.saves.get(&day) {
+				result.clone()
+			} else {
+				match storage
+					.get_item(&format!("{}record_{}", crate::storage::STORAGE_PREFIX, day))
+					.unwrap()
+				{
+					Some(res) => match serde_json::from_str::<crate::model::Rate>(&res) {
+						Ok(res) => {
+							model.saves.insert(day, res.clone());
+							res
 						}
 						Err(_) => default_rate,
+					},
+					None => default_rate,
+				}
+			};
+
+			for subject in subjects {
+				match rate.subjects.iter_mut().find(|e| e.id == subject.id) {
+					Some(data_subject) => {
+						data_subject.name = subject.name;
+						if let Some(val) = data_subject.value {
+							data_subject.value = Some((val / data_subject.max) * subject.max);
+						}
+						data_subject.max = subject.max;
+					}
+					None => {
+						rate.subjects.push(subject);
 					}
 				}
-				None => default_rate,
-			};
+			}
+
+			if rate.subjects.is_empty() {
+				rate.subjects.push(crate::model::Subject {
+					id: format!("{}", uuid::Uuid::new_v4()),
+					name: String::from("mood"),
+					max: 5.0,
+					value: None,
+					observations: None,
+				});
+			}
+
+			model.pending_rate = rate;
 
 			model
 				.pending_rate
@@ -338,10 +342,14 @@ pub fn update(
 				.sort_by_key(|subject| subject.id.clone());
 		}
 		Message::SaveRate => {
+			let key = format!("{}", model.pending_rate.date.format("%Y-%m-%d"));
+
 			orders.send_msg(Message::SaveStorage {
-				key: format!("record_{}", &model.pending_rate.date.format("%Y-%m-%d")),
+				key: key.clone(),
 				value: serde_json::to_string(&model.pending_rate).unwrap(),
 			});
+
+			model.saves.insert(key, model.pending_rate.clone());
 		}
 		Message::SetDarkTheme { value } => {
 			model.dark_theme = value;

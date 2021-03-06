@@ -5,9 +5,10 @@ pub struct Model {
 	pub pending_rate: Rate,
 	pub panel: AppPanel,
 	pub dark_theme: bool,
+	pub saves: std::collections::HashMap<String, Rate>,
 }
 
-#[derive(serde::Serialize, serde::Deserialize)]
+#[derive(serde::Serialize, serde::Deserialize, Clone)]
 pub struct Rate {
 	pub date: chrono::naive::NaiveDate,
 	pub subjects: Vec<Subject>,
@@ -25,6 +26,7 @@ pub struct Subject {
 pub enum AppPanel {
 	Index,
 	Settings,
+	ExportData,
 }
 
 pub fn init(
@@ -91,5 +93,6 @@ pub fn init(
 		pending_rate,
 		panel: AppPanel::Index,
 		dark_theme: false,
+		saves: std::collections::HashMap::new(),
 	};
 }
