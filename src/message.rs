@@ -345,7 +345,7 @@ pub fn update(
 			let key = format!("{}", model.pending_rate.date.format("%Y-%m-%d"));
 
 			orders.send_msg(Message::SaveStorage {
-				key: key.clone(),
+				key: format!("record_{}", key),
 				value: serde_json::to_string(&model.pending_rate).unwrap(),
 			});
 
