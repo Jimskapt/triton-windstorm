@@ -4,7 +4,7 @@
 use seed::prelude::*;
 
 mod locale;
-mod message;
+mod messages;
 mod model;
 mod storage;
 mod view;
@@ -15,5 +15,5 @@ pub fn start() {
 		console_error_panic_hook::set_once();
 	}
 
-	seed::App::start("app", model::init, message::update, view::view);
+	seed::App::start("app", model::init, messages::update, view::view);
 }

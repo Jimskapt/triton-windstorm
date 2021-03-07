@@ -4,7 +4,7 @@ mod data;
 mod index;
 mod settings;
 
-pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
+pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 	return div![
 		IF![
 			model.dark_theme => C![
@@ -19,27 +19,18 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 						At::Href => "#/index",
 					],
 					crate::locale::get_simple(&model.locale, "index"),
-					ev(Ev::Click, |_| crate::message::Message::GoToPanel {
-						panel: crate::model::AppPanel::Index
-					}),
 				],
 				a![
 					attrs![
 						At::Href => "#/settings",
 					],
 					crate::locale::get_simple(&model.locale, "settings"),
-					ev(Ev::Click, |_| crate::message::Message::GoToPanel {
-						panel: crate::model::AppPanel::Settings
-					}),
 				],
 				a![
 					attrs![
-						At::Href => "#/data",
+						At::Href => "#/your-data/export",
 					],
 					crate::locale::get_simple(&model.locale, "your-data"),
-					ev(Ev::Click, |_| crate::message::Message::GoToPanel {
-						panel: crate::model::AppPanel::ExportData
-					}),
 				],
 			],
 		],
@@ -53,12 +44,12 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 						button![
 							C!["primary", "tw-col-span-6"],
 							crate::locale::get_simple(&model.locale, "allow"),
-							ev(Ev::Click, |_| crate::message::Message::AllowStorage),
+							ev(Ev::Click, |_| crate::messages::Message::AllowStorage),
 						],
 						button![
 							C!["tw-col-span-6"],
 							crate::locale::get_simple(&model.locale, "dismiss"),
-							ev(Ev::Click, |_| crate::message::Message::DismissStorageWarning),
+							ev(Ev::Click, |_| crate::messages::Message::DismissStorageWarning),
 						],
 					],
 				]

@@ -1,6 +1,6 @@
 use seed::{prelude::*, *};
 
-pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
+pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 	let notation_subjects = model.pending_rate.subjects.iter().map(|subject| {
 		let id_value = subject.id.clone();
 		let id_observation = subject.id.clone();
@@ -27,10 +27,12 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 							At::Id => format!("rate-{}", subject.id),
 						],
 						input_ev(Ev::Input, move |value| {
-							crate::message::Message::SetSubjectValue {
-								id: id_value,
-								value: Some(value),
-							}
+							crate::messages::Message::Index(
+								crate::messages::index::Message::SetSubjectValue {
+									id: id_value,
+									value: Some(value),
+								},
+							)
 						}),
 					],
 					raw![&format!(" {}", subject.max)],
@@ -45,18 +47,20 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 							At::Value => subject.observations.clone().unwrap_or(String::new()),
 						],
 						input_ev(Ev::Input, move |value| {
-							crate::message::Message::SetSubjectObservation {
-								id: id_observation,
-								observation: Some(value),
-							}
+							crate::messages::Message::Index(
+								crate::messages::index::Message::SetSubjectObservation {
+									id: id_observation,
+									observation: Some(value),
+								},
+							)
 						}),
 					],
 				],
 				hr![],
 			];
-		} else {
-			return tr![];
 		}
+
+		return tr![];
 	});
 
 	let date_for_previous = model.pending_rate.date.clone();
@@ -74,12 +78,12 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 				],
 				"<",
 				ev(Ev::Click, move |_| {
-					crate::message::Message::SetRateDay {
+					crate::messages::Message::Index(crate::messages::index::Message::SetRateDay {
 						day: format!(
 							"{}",
 							(date_for_previous - chrono::Duration::days(1)).format("%Y-%m-%d")
 						),
-					}
+					})
 				}),
 			],
 			label![
@@ -100,9 +104,9 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 					)
 					.unwrap();
 
-					crate::message::Message::SetRateDay {
+					crate::messages::Message::Index(crate::messages::index::Message::SetRateDay {
 						day: target.value(),
-					}
+					})
 				}),
 			],
 			button![
@@ -112,12 +116,12 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 				],
 				">",
 				ev(Ev::Click, move |_| {
-					crate::message::Message::SetRateDay {
+					crate::messages::Message::Index(crate::messages::index::Message::SetRateDay {
 						day: format!(
 							"{}",
 							(date_for_next + chrono::Duration::days(1)).format("%Y-%m-%d")
 						),
-					}
+					})
 				}),
 			],
 			button![
@@ -125,7 +129,9 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 					At::Type => "button",
 					At::Id => "set_today",
 				],
-				ev(Ev::Click, |_| crate::message::Message::SetDateToday),
+				ev(Ev::Click, |_| crate::messages::Message::Index(
+					crate::messages::index::Message::SetDateToday
+				)),
 				crate::locale::get_simple(&model.locale, "today"),
 			],
 		],
@@ -139,7 +145,9 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 						At::Value => crate::locale::get_simple(&model.locale, "save"),
 					],
 					C!["primary", "tw-col-span-6"],
-					ev(Ev::Click, |_| crate::message::Message::SaveRate),
+					ev(Ev::Click, |_| crate::messages::Message::Index(
+						crate::messages::index::Message::SaveRate
+					)),
 				],
 				input![
 					attrs![
@@ -147,7 +155,9 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 						At::Value => crate::locale::get_simple(&model.locale, "reset"),
 					],
 					C!["tw-col-span-6"],
-					ev(Ev::Click, |_| crate::message::Message::ResetSubjects),
+					ev(Ev::Click, |_| crate::messages::Message::Index(
+						crate::messages::index::Message::ResetSubjects
+					)),
 				],
 			],
 		],

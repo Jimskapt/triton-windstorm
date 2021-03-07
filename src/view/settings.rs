@@ -1,15 +1,19 @@
 use seed::{prelude::*, *};
 
-pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
-	let mut temp = model.pending_rate.subjects.clone();
-	temp.append(&mut vec![crate::model::Subject {
-		id: format!("{}", uuid::Uuid::new_v4()),
-		name: String::from(""),
-		value: None,
-		max: 5.0,
-		observations: None,
-	}]);
-	let settings_subjects_fields = temp.iter().map(|subject| {
+pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
+	let mut temp = model.subjects.clone();
+	let id = format!("{}", uuid::Uuid::new_v4());
+	temp.insert(
+		id.clone(),
+		crate::model::Subject {
+			id,
+			name: String::from(""),
+			value: None,
+			max: 5.0,
+			observations: None,
+		},
+	);
+	let settings_subjects_fields = temp.values().map(|subject| {
 		let id_subject = subject.id.clone();
 		let id_max = subject.id.clone();
 
@@ -32,10 +36,13 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 						event.target().unwrap(),
 					)
 					.unwrap();
-					crate::message::Message::SetSubjectName {
-						id: id_subject,
-						name: target.value(),
-					}
+
+					crate::messages::Message::Settings(
+						crate::messages::settings::Message::SetSubjectName {
+							id: id_subject,
+							name: target.value(),
+						},
+					)
 				}),
 			],
 			label![
@@ -55,10 +62,12 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 						event.target().unwrap(),
 					)
 					.unwrap();
-					crate::message::Message::SetSubjectMax {
-						id: id_max,
-						max: target.value(),
-					}
+					crate::messages::Message::Settings(
+						crate::messages::settings::Message::SetSubjectMax {
+							id: id_max,
+							max: target.value(),
+						},
+					)
 				}),
 			],
 		];
@@ -77,9 +86,11 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 					At::Type => "button",
 				],
 				"EN",
-				ev(Ev::Click, |_| crate::message::Message::SetLocale {
-					locale: String::from("en-US")
-				}),
+				ev(Ev::Click, |_| crate::messages::Message::Settings(
+					crate::messages::settings::Message::SetLocale {
+						locale: String::from("en-US")
+					}
+				)),
 			],
 			raw!(" "),
 			button![
@@ -87,9 +98,11 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 					At::Type => "button",
 				],
 				"FR",
-				ev(Ev::Click, |_| crate::message::Message::SetLocale {
-					locale: String::from("fr-FR")
-				}),
+				ev(Ev::Click, |_| crate::messages::Message::Settings(
+					crate::messages::settings::Message::SetLocale {
+						locale: String::from("fr-FR")
+					}
+				)),
 			],
 		],
 		h3![crate::locale::get_simple(&model.locale, "theme")],
@@ -99,9 +112,9 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 					At::Type => "button",
 				],
 				crate::locale::get_simple(&model.locale, "light-theme"),
-				ev(Ev::Click, |_| crate::message::Message::SetDarkTheme {
-					value: false,
-				}),
+				ev(Ev::Click, |_| crate::messages::Message::Settings(
+					crate::messages::settings::Message::SetDarkTheme { value: false }
+				)),
 			],
 			raw!(" "),
 			button![
@@ -109,25 +122,13 @@ pub fn view(model: &crate::model::Model) -> Node<crate::message::Message> {
 					At::Type => "button",
 				],
 				crate::locale::get_simple(&model.locale, "dark-theme"),
-				ev(Ev::Click, |_| crate::message::Message::SetDarkTheme {
-					value: true,
-				}),
+				ev(Ev::Click, |_| crate::messages::Message::Settings(
+					crate::messages::settings::Message::SetDarkTheme { value: true }
+				)),
 			],
 		],
 		h3![crate::locale::get_simple(&model.locale, "subjects")],
-		article![
-			settings_subjects_fields,
-			p![
-				C!["call_to_action"],
-				input![
-					attrs![
-						At::Type => "submit",
-						At::Value => crate::locale::get_simple(&model.locale, "save"),
-					],
-					C!["primary", "tw-col-span-12"],
-				],
-			],
-		],
+		article![settings_subjects_fields,],
 		h3![crate::locale::get_simple(&model.locale, "app-version")],
 		article![env!("CARGO_PKG_VERSION")],
 	];

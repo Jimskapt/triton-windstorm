@@ -1,11 +1,17 @@
 pub struct Model {
 	pub locale: fluent::FluentBundle<fluent::FluentResource>,
+	pub dark_theme: bool,
+
 	pub allowed_save: bool,
 	pub show_unallowed_save: bool,
-	pub pending_rate: Rate,
+
 	pub panel: AppPanel,
-	pub dark_theme: bool,
-	pub saves: std::collections::HashMap<String, Rate>,
+
+	pub subjects: std::collections::HashMap<String, Subject>,
+	pub pending_rate: Rate,
+	pub records: std::collections::HashMap<String, Rate>,
+
+	pub pretty_export: bool,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
@@ -30,9 +36,14 @@ pub enum AppPanel {
 }
 
 pub fn init(
-	_url: seed::Url,
-	orders: &mut impl seed::prelude::Orders<crate::message::Message>,
+	url: seed::Url,
+	orders: &mut impl seed::prelude::Orders<crate::messages::Message>,
 ) -> Model {
+	orders.subscribe(crate::messages::Message::UrlChanged);
+	orders.send_msg(crate::messages::Message::UrlChanged(
+		seed::prelude::subs::UrlChanged(url),
+	));
+
 	let storage = seed::prelude::web_sys::window()
 		.unwrap()
 		.local_storage()
@@ -72,7 +83,11 @@ pub fn init(
 			}
 		}
 	};
-	orders.after_next_render(move |_| crate::message::Message::SetDarkTheme { value: dark });
+	orders.after_next_render(move |_| {
+		crate::messages::Message::Settings(crate::messages::settings::Message::SetDarkTheme {
+			value: dark,
+		})
+	});
 
 	let today = chrono::offset::Local::today();
 	let pending_rate = Rate {
@@ -84,15 +99,96 @@ pub fn init(
 		subjects: vec![],
 	};
 
-	orders.after_next_render(|_| crate::message::Message::SetDateToday);
+	orders.after_next_render(|_| {
+		crate::messages::Message::Index(crate::messages::index::Message::SetDateToday)
+	});
+
+	let mut records = std::collections::HashMap::new();
+	let mut subjects: std::collections::HashMap<String, Subject> = std::collections::HashMap::new();
+	if let Ok(length) = storage.length() {
+		for i in 0..length {
+			let key = storage.key(i).unwrap().unwrap();
+			let value = storage.get(&key).unwrap().unwrap();
+
+			if let Some(temp_next) =
+				str::strip_prefix(&key, &format!("{}subject_", crate::storage::STORAGE_PREFIX))
+			{
+				if let Some(id) = temp_next.strip_suffix("_name") {
+					let id = String::from(id);
+					match subjects.get_mut(&id) {
+						Some(subject) => {
+							(*subject).name = value.clone();
+						}
+						None => {
+							subjects.insert(
+								id.clone(),
+								crate::model::Subject {
+									id,
+									name: value.clone(),
+									max: 5.0,
+									value: None,
+									observations: None,
+								},
+							);
+						}
+					}
+				}
+
+				if let Some(id) = temp_next.strip_suffix("_max") {
+					let value = value.parse().unwrap();
+
+					match subjects.get_mut(id) {
+						Some(subject) => {
+							subject.max = value;
+						}
+						None => {
+							let id = String::from(id);
+							subjects.insert(
+								id.clone(),
+								crate::model::Subject {
+									id,
+									name: String::new(),
+									max: value,
+									value: None,
+									observations: None,
+								},
+							);
+						}
+					}
+				}
+			} else if let Some(temp_next) =
+				str::strip_prefix(&key, &format!("{}record_", crate::storage::STORAGE_PREFIX))
+			{
+				records.insert(
+					String::from(temp_next),
+					serde_json::from_str(&value).unwrap(),
+				);
+			}
+		}
+	}
+	if subjects.is_empty() {
+		let id = format!("{}", uuid::Uuid::new_v4());
+		subjects.insert(
+			id.clone(),
+			crate::model::Subject {
+				id,
+				name: String::from("mood"),
+				max: 5.0,
+				value: None,
+				observations: None,
+			},
+		);
+	}
 
 	return Model {
 		locale,
 		allowed_save,
 		show_unallowed_save,
 		pending_rate,
+		subjects,
 		panel: AppPanel::Index,
 		dark_theme: false,
-		saves: std::collections::HashMap::new(),
+		records,
+		pretty_export: true,
 	};
 }

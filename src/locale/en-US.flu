@@ -24,3 +24,4 @@ export = export
 import = import
 export-your-data = { export } { your-data }
 import-your-data = { import } { your-data }
+readable = readable
