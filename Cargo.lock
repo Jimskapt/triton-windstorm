@@ -888,7 +888,7 @@ checksum = "29738eedb4388d9ea620eeab9384884fc3f06f586a2eddb56bedc5885126c7c1"
 
 [[package]]
 name = "triton_windstorm"
-version = "1.5.2"
+version = "1.6.0"
 dependencies = [
  "chrono",
  "console_error_panic_hook",
