@@ -25,3 +25,6 @@ import = importer
 export-your-data = { export } { your-data }
 import-your-data = { import } { your-data }
 readable = lisible
+replace-all = remplacer toutes les
+add-to = ajouter aux
+existing-data = données existantes

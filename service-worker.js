@@ -1,5 +1,5 @@
 const APP_NAME = "triton-windstorm";
-const CACHE_VERSION = "1.5.3";
+const CACHE_VERSION = "1.7.0";
 
 const CACHE_PREFIX = APP_NAME + '-' + CACHE_VERSION;
 
@@ -9,11 +9,13 @@ self.addEventListener('activate', function(event) {
 			.open(CACHE_PREFIX)
 			.then(function(cache) {
 				return cache.addAll([
-					'index.html',
-					'index.css',
-					'pkg/package.js',
-					'pkg/package_bg.wasm',
-					'icons/icon-32.png',
+					'./',
+					'./index.html',
+					'./index.css',
+					'./app.webmanifest',
+					'./pkg/package.js',
+					'./pkg/package_bg.wasm',
+					'./icons/icon-32.png',
 				]);
 			})
 			.catch(function(error) {

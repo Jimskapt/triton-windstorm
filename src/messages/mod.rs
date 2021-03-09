@@ -81,7 +81,7 @@ pub fn update(
 					orders.send_msg(Message::GoToPanel {
 						panel: if let Some(path) = url.hash_path().get(1) {
 							if path == "import" {
-								crate::model::AppPanel::ExportData
+								crate::model::AppPanel::ImportData
 							} else {
 								crate::model::AppPanel::ExportData
 							}

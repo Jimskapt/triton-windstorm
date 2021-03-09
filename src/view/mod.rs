@@ -57,7 +57,8 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 			match model.panel {
 				crate::model::AppPanel::Index => index::view(model),
 				crate::model::AppPanel::Settings => settings::view(model),
-				crate::model::AppPanel::ExportData => data::view(model),
+				crate::model::AppPanel::ExportData | crate::model::AppPanel::ImportData =>
+					data::view(model),
 			},
 		],
 	];

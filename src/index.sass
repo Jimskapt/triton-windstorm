@@ -18,11 +18,11 @@ header {
 	@apply tw-py-2 tw-fixed tw-w-screen;
 }
 
-header nav {
+nav {
 	@apply tw-inline;
 }
 
-header nav a {
+nav a {
 	@apply tw-mr-4 hover:tw-border-b-2 hover:tw-border-gray-500;
 }
 
@@ -83,7 +83,7 @@ input[type=text], input[type=number], input[type=date], textarea {
 }
 
 .call_to_action {
-	@apply tw-mt-4 tw-grid tw-gap-2 tw-grid-cols-12;
+	@apply tw-mt-4 tw-grid tw-gap-2 tw-grid-cols-6 sm:tw-grid-cols-12;
 }
 
 .index_page .subject {
@@ -140,4 +140,8 @@ input[type=text], input[type=number], input[type=date], textarea {
 
 article.message.warning {
 	@apply tw-bg-yellow-200 dark:tw-bg-yellow-900;
+}
+
+article.message.error {
+	@apply tw-bg-red-200 dark:tw-bg-red-900;
 }

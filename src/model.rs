@@ -12,6 +12,8 @@ pub struct Model {
 	pub records: std::collections::HashMap<String, Rate>,
 
 	pub pretty_export: bool,
+
+	pub pending_import: String,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
@@ -33,6 +35,14 @@ pub enum AppPanel {
 	Index,
 	Settings,
 	ExportData,
+	ImportData,
+}
+#[derive(serde::Serialize, serde::Deserialize)]
+pub struct Export {
+	pub generator_name: String,
+	pub generator_version: String,
+	pub subjects: Option<Vec<crate::model::Subject>>,
+	pub records: Option<Vec<crate::model::Rate>>,
 }
 
 pub fn init(
@@ -190,5 +200,6 @@ pub fn init(
 		dark_theme: false,
 		records,
 		pretty_export: true,
+		pending_import: String::new(),
 	};
 }
