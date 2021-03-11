@@ -33,7 +33,7 @@
 			.serviceWorker
 			.register('./service-worker.js', {scope: './'})
 			.catch(function(error) {
-				console.err("SW register error :", arguments);
+				console.error("Service Worker register error :", error);
 			});
 	}
 	</script>
