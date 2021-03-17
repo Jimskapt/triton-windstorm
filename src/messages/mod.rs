@@ -8,6 +8,7 @@ pub enum Message {
 	Data(data::Message),
 
 	SaveStorage { key: String, value: String },
+	DeleteStorage(String),
 	AllowStorage,
 	DismissStorageWarning,
 
@@ -45,6 +46,21 @@ pub fn update(
 			} else {
 				seed::log!(&format!(
 					"can not save `{}` in local storage because user has not allowed it (yet)",
+					key
+				));
+			}
+		}
+		Message::DeleteStorage(key) => {
+			model.allowed_save = crate::storage::get_allowed(&storage) == "true";
+			model.show_unallowed_save = crate::storage::get_allowed(&storage) != "true";
+
+			if model.allowed_save {
+				storage
+					.remove_item(&format!("{}{}", crate::storage::STORAGE_PREFIX, key))
+					.unwrap();
+			} else {
+				seed::log!(&format!(
+					"can not delete `{}` in local storage because user has not allowed it (yet)",
 					key
 				));
 			}

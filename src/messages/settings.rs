@@ -5,6 +5,8 @@ pub enum Message {
 
 	SetSubjectName { id: String, name: String },
 	SetSubjectMax { id: String, max: String },
+
+	SubjectsCleanup,
 }
 
 pub fn update(
@@ -83,6 +85,10 @@ pub fn update(
 				}
 			}
 
+			orders.send_msg(crate::messages::Message::Settings(
+				crate::messages::settings::Message::SubjectsCleanup,
+			));
+
 			orders.send_msg(crate::messages::Message::Index(
 				crate::messages::index::Message::SetRateDay {
 					day: format!("{}", model.pending_rate.date.format("%Y-%m-%d")),
@@ -141,6 +147,29 @@ pub fn update(
 					day: format!("{}", model.pending_rate.date.format("%Y-%m-%d")),
 				},
 			));
+		}
+		Message::SubjectsCleanup => {
+			model.subjects = model
+				.subjects
+				.iter()
+				.filter(|(_, subject)| {
+					let res = subject.name.trim() != "";
+
+					if !res {
+						orders.send_msg(crate::messages::Message::DeleteStorage(format!(
+							"subject_{}_name",
+							subject.id.clone()
+						)));
+						orders.send_msg(crate::messages::Message::DeleteStorage(format!(
+							"subject_{}_max",
+							subject.id.clone()
+						)));
+					}
+
+					res
+				})
+				.map(|(k, v)| (k.clone(), v.clone()))
+				.collect();
 		}
 	}
 }

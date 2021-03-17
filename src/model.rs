@@ -7,9 +7,9 @@ pub struct Model {
 
 	pub panel: AppPanel,
 
-	pub subjects: std::collections::HashMap<String, Subject>,
+	pub subjects: std::collections::BTreeMap<String, Subject>,
 	pub pending_rate: Rate,
-	pub records: std::collections::HashMap<String, Rate>,
+	pub records: std::collections::BTreeMap<String, Rate>,
 
 	pub pretty_export: bool,
 
@@ -113,8 +113,9 @@ pub fn init(
 		crate::messages::Message::Index(crate::messages::index::Message::SetDateToday)
 	});
 
-	let mut records = std::collections::HashMap::new();
-	let mut subjects: std::collections::HashMap<String, Subject> = std::collections::HashMap::new();
+	let mut records = std::collections::BTreeMap::new();
+	let mut subjects: std::collections::BTreeMap<String, Subject> =
+		std::collections::BTreeMap::new();
 	if let Ok(length) = storage.length() {
 		for i in 0..length {
 			let key = storage.key(i).unwrap().unwrap();
