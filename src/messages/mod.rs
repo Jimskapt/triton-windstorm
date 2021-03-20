@@ -1,4 +1,5 @@
 pub mod data;
+pub mod graphs;
 pub mod index;
 pub mod settings;
 
@@ -6,6 +7,7 @@ pub enum Message {
 	Index(index::Message),
 	Settings(settings::Message),
 	Data(data::Message),
+	Graphs(graphs::Message),
 
 	SaveStorage { key: String, value: String },
 	DeleteStorage(String),
@@ -31,6 +33,7 @@ pub fn update(
 		Message::Index(message) => index::update(message, model, orders),
 		Message::Settings(message) => settings::update(message, model, orders),
 		Message::Data(message) => data::update(message, model, orders),
+		Message::Graphs(message) => graphs::update(message, model, orders),
 
 		Message::SaveStorage { key, value } => {
 			model.allowed_save = crate::storage::get_allowed(&storage) == "true";
@@ -81,6 +84,18 @@ pub fn update(
 		}
 
 		Message::GoToPanel { panel } => {
+			if let crate::model::AppPanel::Graphics = panel {
+				model.do_render_graphics = true;
+				orders.send_msg(crate::messages::Message::Graphs(
+					crate::messages::graphs::Message::ComputeHistoricalSubjects,
+				));
+				orders.after_next_render(|_| {
+					crate::messages::Message::Graphs(crate::messages::graphs::Message::UpdateGraph)
+				});
+			} else {
+				model.do_render_graphics = false;
+			}
+
 			model.panel = panel;
 		}
 		Message::UrlChanged(seed::prelude::subs::UrlChanged(url)) => {
@@ -104,6 +119,10 @@ pub fn update(
 						} else {
 							crate::model::AppPanel::ExportData
 						},
+					});
+				} else if path == "graphs" {
+					orders.send_msg(Message::GoToPanel {
+						panel: crate::model::AppPanel::Graphics,
 					});
 				}
 			}

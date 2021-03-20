@@ -14,6 +14,12 @@ pub struct Model {
 	pub pretty_export: bool,
 
 	pub pending_import: String,
+
+	pub do_render_graphics: bool,
+	pub graphs_canvas: seed::prelude::ElRef<seed::prelude::web_sys::HtmlCanvasElement>,
+	pub historical_subjects: std::collections::BTreeMap<String, HistoricalSubject>,
+	pub graph_start: Option<chrono::naive::NaiveDate>,
+	pub graph_end: Option<chrono::naive::NaiveDate>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
@@ -31,11 +37,18 @@ pub struct Subject {
 	pub observations: Option<String>,
 }
 
+#[derive(Clone, PartialOrd, PartialEq, Eq, Ord)]
+pub struct HistoricalSubject {
+	pub checked: bool,
+	pub color: String,
+}
+
 pub enum AppPanel {
 	Index,
 	Settings,
 	ExportData,
 	ImportData,
+	Graphics,
 }
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct Export {
@@ -202,5 +215,10 @@ pub fn init(
 		records,
 		pretty_export: true,
 		pending_import: String::new(),
+		do_render_graphics: false,
+		graphs_canvas: seed::prelude::ElRef::default(),
+		historical_subjects: std::collections::BTreeMap::new(),
+		graph_start: None,
+		graph_end: None,
 	};
 }

@@ -1,6 +1,7 @@
 use seed::{prelude::*, *};
 
 mod data;
+mod graphs;
 mod index;
 mod settings;
 
@@ -32,6 +33,12 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 					],
 					crate::locale::get_simple(&model.locale, "your-data"),
 				],
+				a![
+					attrs![
+						At::Href => "#/graphs",
+					],
+					crate::locale::get_simple(&model.locale, "graphics"),
+				],
 			],
 		],
 		main![
@@ -59,6 +66,7 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 				crate::model::AppPanel::Settings => settings::view(model),
 				crate::model::AppPanel::ExportData | crate::model::AppPanel::ImportData =>
 					data::view(model),
+				crate::model::AppPanel::Graphics => graphs::view(model),
 			},
 		],
 	];
