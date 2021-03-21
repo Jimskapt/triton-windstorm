@@ -44,7 +44,7 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 							At::Type => "text",
 							At::Placeholder => crate::locale::get_simple(&model.locale, "observation"),
 							At::Rows => 1,
-							At::Value => subject.observations.clone().unwrap_or(String::new()),
+							At::Value => subject.observations.clone().unwrap_or_default(),
 						],
 						input_ev(Ev::Input, move |value| {
 							crate::messages::Message::Index(
@@ -63,8 +63,8 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 		return tr![];
 	});
 
-	let date_for_previous = model.pending_rate.date.clone();
-	let date_for_next = model.pending_rate.date.clone();
+	let date_for_previous = model.pending_rate.date;
+	let date_for_next = model.pending_rate.date;
 
 	return div![
 		C!["index_page",],

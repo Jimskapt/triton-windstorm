@@ -34,10 +34,7 @@ pub fn update(
 
 			orders.send_msg(crate::messages::Message::SaveStorage {
 				key: String::from("dark_theme"),
-				value: String::from(match value {
-					true => "true",
-					false => "false",
-				}),
+				value: String::from(if value { "true" } else { "false" }),
 			});
 
 			let html_classes = seed::prelude::wasm_bindgen::JsCast::dyn_into::<web_sys::Element>(
@@ -77,7 +74,7 @@ pub fn update(
 					};
 
 					orders.send_msg(crate::messages::Message::SaveStorage {
-						key: format!("subject_{}_name", temp.id.clone()),
+						key: format!("subject_{}_name", temp.id),
 						value: temp.name.clone(),
 					});
 
@@ -99,7 +96,7 @@ pub fn update(
 			let value: Result<f64, _> = max.parse();
 
 			if let Ok(value) = value {
-				if value >= 1.0 && value <= f64::MAX {
+				if (1.0..=f64::MAX).contains(&value) {
 					let max = std::convert::TryInto::try_into(value).unwrap();
 
 					match model.subjects.get_mut(&id) {
@@ -134,7 +131,7 @@ pub fn update(
 							model.pending_rate.subjects.push(temp.clone());
 
 							orders.send_msg(crate::messages::Message::SaveStorage {
-								key: format!("subject_{}_max", temp.id.clone()),
+								key: format!("subject_{}_max", temp.id),
 								value: format!("{}", temp.max),
 							});
 						}

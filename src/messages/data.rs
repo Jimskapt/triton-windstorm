@@ -14,7 +14,7 @@ pub fn update(
 		Message::SetPretty(val) => model.pretty_export = val,
 		Message::SetPendingImport(value) => model.pending_import = value,
 		Message::DoImport(replace) => {
-			if replace == true {
+			if replace {
 				model.subjects = std::collections::BTreeMap::new();
 				model.records = std::collections::BTreeMap::new();
 			}

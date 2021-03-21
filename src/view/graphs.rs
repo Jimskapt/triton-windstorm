@@ -6,6 +6,7 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 		.iter()
 		.map(|(name, subject)| {
 			let name_for_event = name.clone();
+
 			label![
 				C!["tw-col-span-12", "sm:tw-col-span-6", "md:tw-col-span-4",],
 				input![
@@ -28,27 +29,80 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 						)
 					}),
 				],
-				format!(" {}", name),
+				span![
+					style![
+						St::Color => subject.color,
+					],
+					format!(" {}", name),
+				],
 			]
 		})
 		.collect();
 
 	return div![
 		h2!(crate::locale::get_simple(&model.locale, "graphics")),
-		article![canvas![
-			el_ref(&model.graphs_canvas),
-			attrs! {
-				At::Width => px(400),
-				At::Height => px(400),
-			},
+		article![
 			style![
-				St::Width => "100%",
-				St::Height => "400px",
+				St::Padding => "0",
 			],
-		],],
+			canvas![
+				el_ref(&model.graphs_canvas),
+				attrs! {
+					At::Width => px(400),
+					At::Height => px(400),
+				},
+				style![
+					St::Width => "100%",
+					St::Height => "400px",
+				],
+			],
+		],
 		h3!(crate::locale::get_simple(&model.locale, "settings")),
 		article![
 			C!["tw-grid", "tw-grid-cols-12",],
+			label![
+				C!["tw-col-span-12", "sm:tw-col-span-6",],
+				input![
+					attrs! {
+						At::Type => "checkbox",
+						At::Checked => model.show_points.as_at_value(),
+					},
+					ev(Ev::Change, |event| {
+						let target = wasm_bindgen::JsCast::dyn_into::<web_sys::HtmlInputElement>(
+							event.target().unwrap(),
+						)
+						.unwrap();
+
+						crate::messages::Message::Graphs(
+							crate::messages::graphs::Message::SetShowPoints(target.checked()),
+						)
+					}),
+				],
+				format!(
+					" {}",
+					crate::locale::get_simple(&model.locale, "show-points")
+				),
+			],
+			label![
+				C!["tw-col-span-12", "sm:tw-col-span-6",],
+				input![
+					attrs! {
+						At::Type => "checkbox",
+						At::Checked => model.show_grid.as_at_value(),
+					},
+					ev(Ev::Change, |event| {
+						let target = wasm_bindgen::JsCast::dyn_into::<web_sys::HtmlInputElement>(
+							event.target().unwrap(),
+						)
+						.unwrap();
+
+						crate::messages::Message::Graphs(
+							crate::messages::graphs::Message::SetShowGrid(target.checked()),
+						)
+					}),
+				],
+				format!(" {}", crate::locale::get_simple(&model.locale, "show-grid")),
+			],
 			label![
 				C!["tw-col-span-12", "sm:tw-col-span-6",],
 				attrs![
@@ -73,7 +127,7 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 					.unwrap();
 
 					let value = target.value();
-					if value == "" {
+					if value.is_empty() {
 						crate::messages::Message::Graphs(
 							crate::messages::graphs::Message::SetStart(None),
 						)
@@ -108,7 +162,7 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 					.unwrap();
 
 					let value = target.value();
-					if value == "" {
+					if value.is_empty() {
 						crate::messages::Message::Graphs(crate::messages::graphs::Message::SetEnd(
 							None,
 						))

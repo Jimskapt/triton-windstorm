@@ -20,6 +20,8 @@ pub struct Model {
 	pub historical_subjects: std::collections::BTreeMap<String, HistoricalSubject>,
 	pub graph_start: Option<chrono::naive::NaiveDate>,
 	pub graph_end: Option<chrono::naive::NaiveDate>,
+	pub show_points: bool,
+	pub show_grid: bool,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
@@ -41,6 +43,7 @@ pub struct Subject {
 pub struct HistoricalSubject {
 	pub checked: bool,
 	pub color: String,
+	pub find_ids: Vec<String>,
 }
 
 pub enum AppPanel {
@@ -220,5 +223,7 @@ pub fn init(
 		historical_subjects: std::collections::BTreeMap::new(),
 		graph_start: None,
 		graph_end: None,
+		show_points: true,
+		show_grid: true,
 	};
 }

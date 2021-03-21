@@ -1,3 +1,4 @@
+date-format = %d/%m/%Y
 unallowed-save = Cette app n'a pas été autorisée à sauvegarder les données dans votre navigateur. Les modifications ne seront pas enregistrées !
 allow = autoriser
 dismiss = fermer
@@ -33,3 +34,5 @@ start = début
 end = fin
 all = tous
 none = aucun
+show-points = afficher les points ?
+show-grid = afficher la grille ?

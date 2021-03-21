@@ -64,9 +64,10 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 						St::LineBreak => "anywhere",
 					],
 					C!["tw-w-full", "tw-text-xs"],
-					match model.pretty_export {
-						true => serde_json::to_string_pretty(&current_data),
-						false => serde_json::to_string(&current_data),
+					if model.pretty_export {
+						serde_json::to_string_pretty(&current_data)
+					} else {
+						serde_json::to_string(&current_data)
 					}
 					.unwrap(),
 				],

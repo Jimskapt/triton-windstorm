@@ -1,5 +1,6 @@
 #![allow(clippy::needless_return)]
 #![allow(clippy::wildcard_imports)]
+#![allow(clippy::struct_excessive_bools)]
 
 use seed::prelude::*;
 
