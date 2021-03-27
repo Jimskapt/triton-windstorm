@@ -4,6 +4,7 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 	let subjects_list: Vec<Node<crate::messages::Message>> = model
 		.historical_subjects
 		.iter()
+		.filter(|(name, _)| name.trim() != "")
 		.map(|(name, subject)| {
 			let name_for_event = name.clone();
 
@@ -35,6 +36,69 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 					],
 					format!(" {}", name),
 				],
+			]
+		})
+		.collect();
+
+	let statistics_rows: Vec<Node<crate::messages::Message>> = model
+		.historical_subjects
+		.iter()
+		.filter(|(name, subject)| name.trim() != "" && subject.checked)
+		.map(|(name, subject)| {
+			div![
+				style![
+					St::Display => "flex",
+					St::FlexDirection => "column",
+					St::Padding => "1em",
+				],
+				span![
+					style![
+						St::Color => subject.color,
+						St::FontWeight => "bold",
+						St::TextAlign => "center",
+					],
+					name,
+				],
+				span![format!(
+					"{} : {}",
+					crate::locale::get_simple(&model.locale, "min"),
+					match subject.min {
+						Some(value) => format!("{:.0} %", value * 100.0),
+						None => String::from("-"),
+					}
+				),],
+				span![format!(
+					"{} : {}",
+					crate::locale::get_simple(&model.locale, "max"),
+					match subject.max {
+						Some(value) => format!("{:.0} %", value * 100.0),
+						None => String::from("-"),
+					}
+				),],
+				span![format!(
+					"{} : {}",
+					crate::locale::get_simple(&model.locale, "average"),
+					match subject.average {
+						Some(value) => format!("{:.0} %", value * 100.0),
+						None => String::from("-"),
+					}
+				),],
+				span![format!(
+					"{} : {}",
+					crate::locale::get_simple(&model.locale, "deviation"),
+					match subject.deviation {
+						Some(value) => format!("{:.2} %", value * 100.0),
+						None => String::from("-"),
+					}
+				),],
+				span![format!(
+					"{} : {}",
+					crate::locale::get_simple(&model.locale, "average_error"),
+					match subject.average_error {
+						Some(value) => format!("{:.2} %", value * 100.0),
+						None => String::from("-"),
+					}
+				),],
 			]
 		})
 		.collect();
@@ -205,6 +269,15 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 				],
 			],
 			subjects_list,
-		]
+		],
+		h3!(crate::locale::get_simple(&model.locale, "statistics")),
+		article![
+			style![
+				St::Display => "flex",
+				St::FlexWrap => "wrap",
+				St::JustifyContent => "center",
+			],
+			statistics_rows,
+		],
 	];
 }

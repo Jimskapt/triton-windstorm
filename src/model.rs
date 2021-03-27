@@ -39,11 +39,23 @@ pub struct Subject {
 	pub observations: Option<String>,
 }
 
-#[derive(Clone, PartialOrd, PartialEq, Eq, Ord)]
+#[derive(Clone, Debug, PartialOrd, PartialEq)]
 pub struct HistoricalSubject {
 	pub checked: bool,
 	pub color: String,
 	pub find_ids: Vec<String>,
+	pub min: Option<f64>,
+	pub max: Option<f64>,
+	pub average: Option<f64>,
+	pub deviation: Option<f64>,
+	pub average_error: Option<f64>,
+}
+
+impl Eq for HistoricalSubject {}
+impl Ord for HistoricalSubject {
+	fn cmp(&self, _: &Self) -> std::cmp::Ordering {
+		std::cmp::Ordering::Greater
+	}
 }
 
 pub enum AppPanel {
