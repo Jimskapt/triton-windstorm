@@ -1,6 +1,7 @@
 {
 	"name": "Triton Windstorm",
-	"short_name": "T.W.",
+	"short_name": "TW",
+	"description": "A rate-my-day app.",
 	"icons": [
 		{
 			"src": "icons/icon-32.png",
@@ -9,5 +10,7 @@
 		}
 	],
 	"start_url": "index.html",
-	"display": "standalone"
+	"display": "standalone",
+	"theme_color": "#1E1E1E",
+	"background_color": "#1E1E1E"
 }
