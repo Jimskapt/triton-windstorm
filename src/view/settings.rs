@@ -126,7 +126,5 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 		],
 		h3![crate::locale::get_simple(&model.locale, "subjects")],
 		article![settings_subjects_fields,],
-		h3![crate::locale::get_simple(&model.locale, "app-version")],
-		article![env!("CARGO_PKG_VERSION")],
 	];
 }

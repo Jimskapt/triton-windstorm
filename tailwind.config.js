@@ -22,6 +22,7 @@ module.exports = {
     },
     textColor: {
       black: colors.black,
+      blue: colors.blue,
       gray: {
         50: colors.coolGray[50],
       },

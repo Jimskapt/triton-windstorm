@@ -124,6 +124,10 @@ pub fn update(
 					orders.send_msg(Message::GoToPanel {
 						panel: crate::model::AppPanel::Graphics,
 					});
+				} else if path == "about" {
+					orders.send_msg(Message::GoToPanel {
+						panel: crate::model::AppPanel::About,
+					});
 				}
 			}
 		}

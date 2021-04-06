@@ -6,7 +6,7 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 		let id_observation = subject.id.clone();
 
 		if subject.name.trim() != "" {
-			return div![
+			return article![
 				C!["subject"],
 				div![
 					C!["rate"],
@@ -14,9 +14,12 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 						attrs![
 							At::For => format!("rate-{}", subject.id),
 						],
-						format!("{} :", &subject.name),
+						&subject.name,
 					],
-					raw![&format!("{:04.1} ", subject.value.unwrap_or(subject.max))],
+					raw![&match subject.value {
+						Some(value) => format!("{:04.1} ", value),
+						None => String::from("---- "),
+					}],
 					input![
 						attrs![
 							At::Type => "range",
@@ -56,11 +59,10 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 						}),
 					],
 				],
-				hr![],
 			];
 		}
 
-		return tr![];
+		return seed::div![];
 	});
 
 	let date_for_previous = model.pending_rate.date;
@@ -135,31 +137,29 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 				crate::locale::get_simple(&model.locale, "today"),
 			],
 		],
-		article![
-			notation_subjects,
-			p![
-				C!["call_to_action"],
-				input![
-					attrs![
-						At::Type => "submit",
-						At::Value => crate::locale::get_simple(&model.locale, "save"),
-					],
-					C!["primary", "tw-col-span-6"],
-					ev(Ev::Click, |_| crate::messages::Message::Index(
-						crate::messages::index::Message::SaveRate
-					)),
+		notation_subjects,
+		article![p![
+			C!["call_to_action"],
+			input![
+				attrs![
+					At::Type => "submit",
+					At::Value => crate::locale::get_simple(&model.locale, "save"),
 				],
-				input![
-					attrs![
-						At::Type => "reset",
-						At::Value => crate::locale::get_simple(&model.locale, "reset"),
-					],
-					C!["tw-col-span-6"],
-					ev(Ev::Click, |_| crate::messages::Message::Index(
-						crate::messages::index::Message::ResetSubjects
-					)),
-				],
+				C!["primary", "tw-col-span-6"],
+				ev(Ev::Click, |_| crate::messages::Message::Index(
+					crate::messages::index::Message::SaveRate
+				)),
 			],
-		],
+			input![
+				attrs![
+					At::Type => "reset",
+					At::Value => crate::locale::get_simple(&model.locale, "reset"),
+				],
+				C!["tw-col-span-6"],
+				ev(Ev::Click, |_| crate::messages::Message::Index(
+					crate::messages::index::Message::ResetSubjects
+				)),
+			],
+		],],
 	];
 }

@@ -14,11 +14,11 @@ pub enum Message {
 }
 
 fn date_in_between(
-	day: &String,
+	day: &str,
 	min: Option<chrono::NaiveDate>,
 	max: Option<chrono::NaiveDate>,
 ) -> bool {
-	match chrono::NaiveDate::parse_from_str(&day, "%Y-%m-%d") {
+	match chrono::NaiveDate::parse_from_str(day, "%Y-%m-%d") {
 		Ok(day) => {
 			(match min {
 				Some(min) => (min - day).num_days() <= 0,
@@ -307,7 +307,7 @@ pub fn update(
 				let today_str = format!("{}", chrono::offset::Local::today().format("%Y-%m-%d"));
 				let start_date = model.graph_start.unwrap_or_else(|| {
 					chrono::NaiveDate::parse_from_str(
-						model.records.keys().nth(0).unwrap_or(&yesterday_str),
+						model.records.keys().next().unwrap_or(&yesterday_str),
 						"%Y-%m-%d",
 					)
 					.unwrap()

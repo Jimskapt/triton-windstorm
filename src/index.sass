@@ -6,6 +6,10 @@ body {
 	@apply tw-bg-gray-100 dark:tw-bg-gray-900;
 }
 
+a {
+	@apply tw-text-blue-500 hover:tw-underline;
+}
+
 article, header {
 	@apply tw-bg-white tw-text-black tw-shadow-lg dark:tw-bg-gray-800 dark:tw-text-gray-50;
 }
@@ -19,11 +23,11 @@ header {
 }
 
 nav {
-	@apply tw-inline;
+	@apply tw-inline tw-break-normal tw-flex tw-flex-wrap tw-justify-around tw-px-2;
 }
 
-nav a {
-	@apply tw-mr-4 hover:tw-border-b-2 hover:tw-border-gray-500;
+nav * {
+	@apply tw-m-1;
 }
 
 main {
@@ -44,10 +48,6 @@ h1, h2 {
 
 header h1 {
 	@apply tw-text-3xl tw-block sm:tw-inline-block;
-}
-
-header nav {
-	@apply tw-block tw-ml-8 sm:tw-inline-block sm:tw-ml-0;
 }
 
 h2 {
@@ -83,7 +83,7 @@ input[type=text], input[type=number], input[type=date], textarea {
 }
 
 .call_to_action {
-	@apply tw-mt-4 tw-grid tw-gap-2 tw-grid-cols-6 sm:tw-grid-cols-12;
+	@apply tw-grid tw-gap-2 tw-grid-cols-6 sm:tw-grid-cols-12;
 }
 
 .index_page .subject {
@@ -92,6 +92,10 @@ input[type=text], input[type=number], input[type=date], textarea {
 
 .index_page .subject hr {
 	@apply tw-col-span-2;
+}
+
+.index_page .subject .rate {
+	@apply tw-text-center;
 }
 
 .index_page .subject .rate, .index_page .subject .observation {
@@ -104,6 +108,13 @@ input[type=text], input[type=number], input[type=date], textarea {
 
 .index_page .subject .observation textarea {
 	@apply tw-w-full;
+	min-height: 5em;
+}
+
+@media (min-width: 640px) {
+	.index_page .subject .observation textarea {
+		min-height: 100%;
+	}
 }
 
 .index_page .date_selection {

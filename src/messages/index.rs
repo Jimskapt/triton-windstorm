@@ -97,7 +97,7 @@ pub fn update(
 
 			selected_rate
 				.subjects
-				.sort_by_key(|subject| subject.id.clone());
+				.sort_by_key(|subject| subject.name.clone());
 
 			model.pending_rate = selected_rate;
 		}

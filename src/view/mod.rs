@@ -1,5 +1,6 @@
 use seed::{prelude::*, *};
 
+mod about;
 mod data;
 mod graphs;
 mod index;
@@ -12,35 +13,38 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 				"tw-dark",
 			]
 		],
-		header![
-			h1!["Triton Windstorm"],
-			nav![
-				a![
-					attrs![
-						At::Href => "#/index",
-					],
-					crate::locale::get_simple(&model.locale, "index"),
+		header![nav![
+			a![
+				attrs![
+					At::Href => "#/index",
 				],
-				a![
-					attrs![
-						At::Href => "#/settings",
-					],
-					crate::locale::get_simple(&model.locale, "settings"),
-				],
-				a![
-					attrs![
-						At::Href => "#/your-data/export",
-					],
-					crate::locale::get_simple(&model.locale, "your-data"),
-				],
-				a![
-					attrs![
-						At::Href => "#/graphs",
-					],
-					crate::locale::get_simple(&model.locale, "graphics"),
-				],
+				crate::locale::get_simple(&model.locale, "index"),
 			],
-		],
+			a![
+				attrs![
+					At::Href => "#/settings",
+				],
+				crate::locale::get_simple(&model.locale, "settings"),
+			],
+			a![
+				attrs![
+					At::Href => "#/your-data/export",
+				],
+				crate::locale::get_simple(&model.locale, "your-data"),
+			],
+			a![
+				attrs![
+					At::Href => "#/graphs",
+				],
+				crate::locale::get_simple(&model.locale, "graphics"),
+			],
+			a![
+				attrs![
+					At::Href => "#/about",
+				],
+				crate::locale::get_simple(&model.locale, "about"),
+			],
+		],],
 		main![
 			IF![
 				model.show_unallowed_save => article![
@@ -67,6 +71,7 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 				crate::model::AppPanel::ExportData | crate::model::AppPanel::ImportData =>
 					data::view(model),
 				crate::model::AppPanel::Graphics => graphs::view(model),
+				crate::model::AppPanel::About => about::view(model),
 			},
 		],
 	];

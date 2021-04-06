@@ -64,7 +64,9 @@ pub enum AppPanel {
 	ExportData,
 	ImportData,
 	Graphics,
+	About,
 }
+
 #[derive(serde::Serialize, serde::Deserialize)]
 pub struct Export {
 	pub generator_name: String,
