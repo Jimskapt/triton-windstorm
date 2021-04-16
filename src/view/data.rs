@@ -18,14 +18,20 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 					At::Type => "button",
 					At::Href => "#/your-data/export"
 				],
-				crate::locale::get_simple(&model.locale, "export"),
+				format!(
+					"\u{1f4e4} {}",
+					crate::locale::get_simple(&model.locale, "export")
+				),
 			],
 			a![
 				attrs![
 					At::Type => "button",
 					At::Href => "#/your-data/import"
 				],
-				crate::locale::get_simple(&model.locale, "import"),
+				format!(
+					"\u{1f4e5} {}",
+					crate::locale::get_simple(&model.locale, "import")
+				),
 			],
 		],],
 		h3![match model.panel {
@@ -89,7 +95,10 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 					C!["call_to_action"],
 					button![
 						C!["tw-col-span-6"],
-						format!("{} ...", crate::locale::get_simple(&model.locale, "add-to")),
+						format!(
+							"\u{2795} {} ...",
+							crate::locale::get_simple(&model.locale, "add-to")
+						),
 						ev(Ev::Click, |_| crate::messages::Message::Data(
 							crate::messages::data::Message::DoImport(false)
 						)),
@@ -97,7 +106,7 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 					button![
 						C!["tw-col-span-6"],
 						format!(
-							"{} ...",
+							"\u{1f5d1}\u{fe0f} {} ...",
 							crate::locale::get_simple(&model.locale, "replace-all")
 						),
 						ev(Ev::Click, |_| crate::messages::Message::Data(

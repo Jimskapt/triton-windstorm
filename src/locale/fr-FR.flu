@@ -44,3 +44,5 @@ deviation = écart-type
 average_error = erreur type
 about = a propos
 open-source-code-on = Code open-source sur
+debug = deboguage
+force-refresh = forcer le rafraîchissement de l'app

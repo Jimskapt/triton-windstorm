@@ -7,6 +7,7 @@ pub enum Message {
 	SetSubjectMax { id: String, max: String },
 
 	SubjectsCleanup,
+	ForceRefresh,
 }
 
 pub fn update(
@@ -167,6 +168,13 @@ pub fn update(
 				})
 				.map(|(k, v)| (k.clone(), v.clone()))
 				.collect();
+		}
+		Message::ForceRefresh => {
+			web_sys::window()
+				.unwrap()
+				.location()
+				.reload_with_forceget(true)
+				.ok();
 		}
 	}
 }

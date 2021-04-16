@@ -18,31 +18,46 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 				attrs![
 					At::Href => "#/index",
 				],
-				crate::locale::get_simple(&model.locale, "index"),
+				format!(
+					"\u{1f3e0} {}",
+					crate::locale::get_simple(&model.locale, "index")
+				),
 			],
 			a![
 				attrs![
 					At::Href => "#/settings",
 				],
-				crate::locale::get_simple(&model.locale, "settings"),
+				format!(
+					"\u{2699}\u{fe0f} {}",
+					crate::locale::get_simple(&model.locale, "settings")
+				),
 			],
 			a![
 				attrs![
 					At::Href => "#/your-data/export",
 				],
-				crate::locale::get_simple(&model.locale, "your-data"),
+				format!(
+					"\u{1f4be} {}",
+					crate::locale::get_simple(&model.locale, "your-data")
+				),
 			],
 			a![
 				attrs![
 					At::Href => "#/graphs",
 				],
-				crate::locale::get_simple(&model.locale, "graphics"),
+				format!(
+					"\u{1f4c8} {}",
+					crate::locale::get_simple(&model.locale, "graphics")
+				),
 			],
 			a![
 				attrs![
 					At::Href => "#/about",
 				],
-				crate::locale::get_simple(&model.locale, "about"),
+				format!(
+					"\u{2139}\u{fe0f} {}",
+					crate::locale::get_simple(&model.locale, "about")
+				),
 			],
 		],],
 		main![

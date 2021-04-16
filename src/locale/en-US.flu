@@ -44,3 +44,5 @@ deviation = deviation
 average_error = standard error
 about = about
 open-source-code-on = Open-source code on
+debug = debug
+force-refresh = force refresh of the app

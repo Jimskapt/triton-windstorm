@@ -143,7 +143,7 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 			input![
 				attrs![
 					At::Type => "submit",
-					At::Value => crate::locale::get_simple(&model.locale, "save"),
+					At::Value => format!("\u{1f4be} {}", crate::locale::get_simple(&model.locale, "save")),
 				],
 				C!["primary", "tw-col-span-6"],
 				ev(Ev::Click, |_| crate::messages::Message::Index(
@@ -153,7 +153,7 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 			input![
 				attrs![
 					At::Type => "reset",
-					At::Value => crate::locale::get_simple(&model.locale, "reset"),
+					At::Value => format!("\u{1f519} {}", crate::locale::get_simple(&model.locale, "reset")),
 				],
 				C!["tw-col-span-6"],
 				ev(Ev::Click, |_| crate::messages::Message::Index(

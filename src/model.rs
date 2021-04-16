@@ -221,6 +221,20 @@ pub fn init(
 		);
 	}
 
+	let mut graph_start = None;
+	if let Some(first) = records.keys().into_iter().next() {
+		if let Ok(first) = chrono::NaiveDate::parse_from_str(first, "%Y-%m-%d") {
+			if let Some(last) = records.keys().into_iter().last() {
+				if let Ok(last) = chrono::NaiveDate::parse_from_str(last, "%Y-%m-%d") {
+					let limit = chrono::Duration::days(8);
+					if last - first > limit {
+						graph_start = Some(last - limit);
+					}
+				}
+			}
+		}
+	};
+
 	return Model {
 		locale,
 		allowed_save,
@@ -235,7 +249,7 @@ pub fn init(
 		do_render_graphics: false,
 		graphs_canvas: seed::prelude::ElRef::default(),
 		historical_subjects: std::collections::BTreeMap::new(),
-		graph_start: None,
+		graph_start,
 		graph_end: None,
 		show_points: true,
 		show_grid: true,
