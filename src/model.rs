@@ -37,6 +37,7 @@ pub struct Subject {
 	pub value: Option<f64>,
 	pub max: f64,
 	pub observations: Option<String>,
+	#[serde(default)]
 	pub steps: f64,
 }
 
