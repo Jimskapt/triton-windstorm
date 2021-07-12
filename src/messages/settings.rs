@@ -5,6 +5,7 @@ pub enum Message {
 
 	SetSubjectName { id: String, name: String },
 	SetSubjectMax { id: String, max: String },
+	SetSubjectSteps { id: String, steps: String },
 
 	SubjectsCleanup,
 	ForceRefresh,
@@ -72,6 +73,7 @@ pub fn update(
 						value: None,
 						max: 5.0,
 						observations: None,
+						steps: 1.0,
 					};
 
 					orders.send_msg(crate::messages::Message::SaveStorage {
@@ -127,6 +129,7 @@ pub fn update(
 								value: None,
 								max,
 								observations: None,
+								steps: 1.0,
 							};
 
 							model.pending_rate.subjects.push(temp.clone());
@@ -134,6 +137,49 @@ pub fn update(
 							orders.send_msg(crate::messages::Message::SaveStorage {
 								key: format!("subject_{}_max", temp.id),
 								value: format!("{}", temp.max),
+							});
+						}
+					}
+				}
+			}
+
+			orders.send_msg(crate::messages::Message::Index(
+				crate::messages::index::Message::SetRateDay {
+					day: format!("{}", model.pending_rate.date.format("%Y-%m-%d")),
+				},
+			));
+		}
+		Message::SetSubjectSteps { id, steps } => {
+			let steps: Result<f64, _> = steps.parse();
+
+			if let Ok(steps) = steps {
+				if (0.0..=f64::MAX).contains(&steps) {
+					let max = std::convert::TryInto::try_into(steps).unwrap();
+
+					match model.subjects.get_mut(&id) {
+						Some(subject) => {
+							(*subject).steps = steps;
+
+							orders.send_msg(crate::messages::Message::SaveStorage {
+								key: format!("subject_{}_steps", subject.id.clone()),
+								value: format!("{}", subject.steps.clone()),
+							});
+						}
+						None => {
+							let temp = crate::model::Subject {
+								id: format!("{}", uuid::Uuid::new_v4()),
+								name: String::new(),
+								value: None,
+								max,
+								observations: None,
+								steps: steps,
+							};
+
+							model.pending_rate.subjects.push(temp.clone());
+
+							orders.send_msg(crate::messages::Message::SaveStorage {
+								key: format!("subject_{}_steps", temp.id),
+								value: format!("{}", temp.steps),
 							});
 						}
 					}

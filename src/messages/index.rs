@@ -92,6 +92,7 @@ pub fn update(
 					max: 5.0,
 					value: None,
 					observations: None,
+					steps: 1.0,
 				});
 			}
 

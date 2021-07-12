@@ -37,6 +37,7 @@ pub struct Subject {
 	pub value: Option<f64>,
 	pub max: f64,
 	pub observations: Option<String>,
+	pub steps: f64,
 }
 
 #[derive(Clone, Debug, PartialOrd, PartialEq)]
@@ -169,6 +170,29 @@ pub fn init(
 									max: 5.0,
 									value: None,
 									observations: None,
+									steps: 1.0,
+								},
+							);
+						}
+					}
+				}
+
+				if let Some(id) = temp_next.strip_suffix("_steps") {
+					let id = String::from(id);
+					match subjects.get_mut(&id) {
+						Some(subject) => {
+							(*subject).steps = value.clone().parse().unwrap_or(0.1);
+						}
+						None => {
+							subjects.insert(
+								id.clone(),
+								crate::model::Subject {
+									id,
+									name: String::new(),
+									max: 5.0,
+									value: None,
+									observations: None,
+									steps: value.clone().parse().unwrap_or(0.1),
 								},
 							);
 						}
@@ -176,11 +200,9 @@ pub fn init(
 				}
 
 				if let Some(id) = temp_next.strip_suffix("_max") {
-					let value = value.parse().unwrap();
-
 					match subjects.get_mut(id) {
 						Some(subject) => {
-							subject.max = value;
+							subject.max = value.parse().unwrap_or(5.0);
 						}
 						None => {
 							let id = String::from(id);
@@ -189,9 +211,10 @@ pub fn init(
 								crate::model::Subject {
 									id,
 									name: String::new(),
-									max: value,
+									max: value.parse().unwrap_or(5.0),
 									value: None,
 									observations: None,
+									steps: 1.0,
 								},
 							);
 						}
@@ -217,6 +240,7 @@ pub fn init(
 				max: 5.0,
 				value: None,
 				observations: None,
+				steps: 1.0,
 			},
 		);
 	}

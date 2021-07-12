@@ -1,7 +1,7 @@
 {
   "scripts": {
     "watch": "npm run build-tw && onchange ./src/*.sass ./src/view/*.rs ./tailwind.config.js -- npm run build-tw",
-    "build-tw": "node node_modules/tailwindcss-cli build ./src/index.sass -o ./index.css",
+    "build-tw": "node node_modules/tailwindcss-cli build -i ./src/index.sass -o ./index.css",
     "build-dist": "node -- node_modules/del-cli/cli.js dist && cargo make build_release && cross-env NODE_ENV=production npm run build-tw && node -- node_modules/mkdirp/bin/cmd.js dist/pkg && node -- node_modules/mkdirp/bin/cmd.js dist/icons && node -- node_modules/minify/bin/minify.js index.html > dist/index.html && node -- node_modules/minify/bin/minify.js index.html > dist/index.html && node -- node_modules/minify/bin/minify.js pkg/package.js > dist/pkg/package.js && node -- node_modules/minify/bin/minify.js index.css > dist/index.css && node -- node_modules/minify/bin/minify.js service-worker.js > dist/service-worker.js && node -- node_modules/cpy-cli/cli.js app.webmanifest dist/ && node -- node_modules/cpy-cli/cli.js pkg/package_bg.wasm dist/pkg && node -- node_modules/cpy-cli/cli.js icons/* dist/icons"
   },
   "repository": {
@@ -16,12 +16,12 @@
     "autoprefixer": "^10",
     "cpy-cli": "^3",
     "cross-env": "^7",
-    "del-cli": "^3",
+    "del-cli": "^4",
     "minify": "^7",
     "mkdirp": "^1",
     "onchange": "^7",
     "postcss": "^8",
     "tailwindcss": "^2",
-    "tailwindcss-cli": "^0"
+    "tailwindcss-cli": "^0.1"
   }
 }

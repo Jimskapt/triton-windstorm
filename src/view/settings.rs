@@ -9,10 +9,12 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 		value: None,
 		max: 5.0,
 		observations: None,
+		steps: 1.0,
 	});
 	let settings_subjects_fields = temp.iter().map(|subject| {
 		let id_subject = subject.id.clone();
 		let id_max = subject.id.clone();
+		let id_steps = subject.id.clone();
 
 		return div![
 			C!["subject"],
@@ -63,6 +65,31 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 						crate::messages::settings::Message::SetSubjectMax {
 							id: id_max,
 							max: target.value(),
+						},
+					)
+				}),
+			],
+			label![
+				attrs![
+					At::For => format!("steps-{}", &subject.id),
+				],
+				crate::locale::get_simple(&model.locale, "steps"),
+			],
+			input![
+				attrs![
+					At::Type => "number",
+					At::Value => subject.steps,
+					At::Id => format!("steps-{}", &subject.id),
+				],
+				ev(Ev::Change, move |event| {
+					let target = wasm_bindgen::JsCast::dyn_into::<web_sys::HtmlInputElement>(
+						event.target().unwrap(),
+					)
+					.unwrap();
+					crate::messages::Message::Settings(
+						crate::messages::settings::Message::SetSubjectSteps {
+							id: id_steps,
+							steps: target.value(),
 						},
 					)
 				}),

@@ -1,11 +1,35 @@
 use seed::{prelude::*, *};
 
+use std::convert::TryFrom;
+
 pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 	let notation_subjects = model.pending_rate.subjects.iter().map(|subject| {
 		let id_value = subject.id.clone();
 		let id_observation = subject.id.clone();
 
 		if subject.name.trim() != "" {
+			let mut leading_zeroes: Option<usize> = None;
+			let mut decimals: Option<usize> = None;
+			for i in 0..i32::MAX {
+				if leading_zeroes.is_none() && (subject.max as f32) / f32::powi(10.0, i) < 10.0 {
+					if let Ok(i) = usize::try_from(i) {
+						leading_zeroes = Some(i + 1);
+					}
+				}
+
+				let temp = f32::abs(subject.steps as f32 - subject.steps.floor() as f32)
+					* f32::powi(10.0, i);
+				if decimals.is_none() && f32::abs(temp - temp.floor()) == 0.0 {
+					if let Ok(i) = usize::try_from(i) {
+						decimals = Some(i);
+					}
+				}
+
+				if leading_zeroes.is_some() && decimals.is_some() {
+					break;
+				}
+			}
+
 			return article![
 				C!["subject"],
 				div![
@@ -17,14 +41,23 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 						&subject.name,
 					],
 					raw![&match subject.value {
-						Some(value) => format!("{:04.1} ", value),
-						None => String::from("---- "),
+						Some(value) => format!(
+							"{0:01$.2$} ",
+							value,
+							leading_zeroes.unwrap_or(0) + 1 + decimals.unwrap_or(0),
+							decimals.unwrap_or(0)
+						),
+						None => format!(
+							"{:-<1$} ",
+							"",
+							leading_zeroes.unwrap_or(0) + 1 + decimals.unwrap_or(0)
+						),
 					}],
 					input![
 						attrs![
 							At::Type => "range",
 							At::Min => 0,
-							At::Step => 0.1,
+							At::Step => subject.steps,
 							At::Max => subject.max,
 							At::Value => subject.value.unwrap_or(subject.max),
 							At::Id => format!("rate-{}", subject.id),
@@ -38,7 +71,12 @@ pub fn view(model: &crate::model::Model) -> Node<crate::messages::Message> {
 							)
 						}),
 					],
-					raw![&format!(" {}", subject.max)],
+					raw![&format!(
+						" {0:01$.2$}",
+						subject.max,
+						leading_zeroes.unwrap_or(0) + 1 + decimals.unwrap_or(0),
+						decimals.unwrap_or(0)
+					)],
 				],
 				div![
 					C!["observation"],
