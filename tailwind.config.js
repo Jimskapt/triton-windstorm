@@ -1,7 +1,7 @@
 const colors = require('tailwindcss/colors');
 
 module.exports = {
-  purge: [
+  content: [
     "./src/view/*.rs"
   ],
   prefix: 'tw-',
@@ -9,12 +9,13 @@ module.exports = {
   theme: {
     extend: {},
     colors: {
+      current: 'currentColor',
       transparent: 'transparent',
       primary: {
         500: '#0078d4',
         800: '#0063b1',
       },
-      gray: colors.coolGray,
+      gray: colors.gray,
       black: colors.black,
       white: colors.white,
       yellow: colors.amber,
@@ -24,15 +25,9 @@ module.exports = {
       black: colors.black,
       blue: colors.blue,
       gray: {
-        50: colors.coolGray[50],
+        50: colors.gray[50],
       },
     }
-  },
-  variants: {
-    extend: {
-      borderWidth: ['hover'],
-      ringWidth: ['active'],
-    },
   },
   plugins: [],
 }
