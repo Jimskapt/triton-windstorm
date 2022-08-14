@@ -22,6 +22,9 @@ pub struct Model {
 	pub graph_end: Option<chrono::naive::NaiveDate>,
 	pub show_points: bool,
 	pub show_grid: bool,
+
+	pub database_account_string: String,
+	pub database_remote: Option<pontus_onyx::client::ClientRemote>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Clone)]
@@ -39,6 +42,19 @@ pub struct Subject {
 	pub observations: Option<String>,
 	#[serde(default)]
 	pub steps: f64,
+	#[serde(skip)]
+	pub source: SubjectSource,
+}
+
+#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
+pub enum SubjectSource {
+	Generated,
+	User,
+}
+impl Default for SubjectSource {
+	fn default() -> Self {
+		Self::User
+	}
 }
 
 #[derive(Clone, Debug, PartialOrd, PartialEq)]
@@ -77,20 +93,20 @@ pub struct Export {
 	pub records: Option<Vec<crate::model::Rate>>,
 }
 
+// TODO : warn user when leaving document where there is unsaved data (no localStorage, no remoteStorage)
+
 pub fn init(
 	url: seed::Url,
 	orders: &mut impl seed::prelude::Orders<crate::messages::Message>,
 ) -> Model {
 	orders.subscribe(crate::messages::Message::UrlChanged);
 	orders.send_msg(crate::messages::Message::UrlChanged(
-		seed::prelude::subs::UrlChanged(url),
+		seed::prelude::subs::UrlChanged(url.clone()),
 	));
 
-	let storage = seed::prelude::web_sys::window()
-		.unwrap()
-		.local_storage()
-		.unwrap()
-		.unwrap();
+	let window = seed::prelude::web_sys::window().unwrap();
+
+	let storage = window.local_storage().unwrap().unwrap();
 
 	let locale = crate::locale::get_bundle(&match storage
 		.get_item(&format!("{}locale", crate::storage::STORAGE_PREFIX))
@@ -112,6 +128,113 @@ pub fn init(
 
 	let allowed_save = crate::storage::get_allowed(&storage) == "true";
 	let show_unallowed_save = crate::storage::get_allowed(&storage) != "true";
+
+	if allowed_save {
+		if let Ok(length) = storage.length() {
+			let mut migrated_subjects: std::collections::HashMap<String, crate::model::Subject> =
+				std::collections::HashMap::new();
+
+			for i in 0..length {
+				let key = storage.key(i).unwrap().unwrap();
+
+				if let Some(temp_next) =
+					key.strip_prefix(&format!("{}subject_", crate::storage::STORAGE_PREFIX))
+				{
+					let (id, field) = match temp_next.strip_suffix("_name") {
+						Some(id) => (Some(id), Some("name")),
+						None => match temp_next.strip_suffix("_max") {
+							Some(id) => (Some(id), Some("max")),
+							None => match temp_next.strip_suffix("_steps") {
+								Some(id) => (Some(id), Some("steps")),
+								None => (None, None),
+							},
+						},
+					};
+
+					if let Some(id) = id {
+						let mut subject = match migrated_subjects.get_mut(id) {
+							Some(subject) => subject,
+							None => {
+								migrated_subjects.insert(
+									String::from(id),
+									Subject {
+										id: String::from(id),
+										name: String::from("mood"),
+										value: None,
+										max: 5.0,
+										observations: None,
+										steps: 1.0,
+										source: SubjectSource::User,
+									},
+								);
+
+								migrated_subjects.get_mut(id).unwrap()
+							}
+						};
+
+						let value = storage.get(&key).unwrap().unwrap();
+
+						if let Some(field) = field {
+							if field == "name" {
+								(*subject).name = value;
+							} else if field == "max" {
+								match value.parse::<f64>() {
+									Ok(value) => {
+										(*subject).max = value;
+									}
+									Err(err) => {
+										seed::error!(err);
+									}
+								}
+							} else if field == "steps" {
+								match value.parse::<f64>() {
+									Ok(value) => {
+										(*subject).steps = value;
+									}
+									Err(err) => {
+										seed::error!(err);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			for (id, subject) in migrated_subjects {
+				if !subject.name.is_empty() {
+					if storage
+						.set_item(
+							&format!("{}subject_{id}", crate::storage::STORAGE_PREFIX),
+							&serde_json::to_string(&subject).unwrap(),
+						)
+						.is_ok()
+					{
+						seed::log!(&format!("subject {id} has been migrated"));
+
+						storage
+							.remove_item(&format!(
+								"{}subject_{id}_name",
+								crate::storage::STORAGE_PREFIX
+							))
+							.ok();
+						storage
+							.remove_item(&format!(
+								"{}subject_{id}_max",
+								crate::storage::STORAGE_PREFIX
+							))
+							.ok();
+						storage
+							.remove_item(&format!(
+								"{}subject_{id}_steps",
+								crate::storage::STORAGE_PREFIX
+							))
+							.ok();
+					}
+				}
+			}
+		}
+	}
 
 	let dark = match storage.get_item(&format!("{}dark_theme", crate::storage::STORAGE_PREFIX)) {
 		Ok(Some(value)) => value == "true",
@@ -156,69 +279,13 @@ pub fn init(
 			if let Some(temp_next) =
 				str::strip_prefix(&key, &format!("{}subject_", crate::storage::STORAGE_PREFIX))
 			{
-				if let Some(id) = temp_next.strip_suffix("_name") {
-					let id = String::from(id);
-					match subjects.get_mut(&id) {
-						Some(subject) => {
-							(*subject).name = value.clone();
-						}
-						None => {
-							subjects.insert(
-								id.clone(),
-								crate::model::Subject {
-									id,
-									name: value.clone(),
-									max: 5.0,
-									value: None,
-									observations: None,
-									steps: 1.0,
-								},
-							);
-						}
+				let id = temp_next;
+				match serde_json::from_str(&value) {
+					Ok(value) => {
+						subjects.insert(String::from(id), value);
 					}
-				}
-
-				if let Some(id) = temp_next.strip_suffix("_steps") {
-					let id = String::from(id);
-					match subjects.get_mut(&id) {
-						Some(subject) => {
-							(*subject).steps = value.clone().parse().unwrap_or(0.1);
-						}
-						None => {
-							subjects.insert(
-								id.clone(),
-								crate::model::Subject {
-									id,
-									name: String::new(),
-									max: 5.0,
-									value: None,
-									observations: None,
-									steps: value.clone().parse().unwrap_or(0.1),
-								},
-							);
-						}
-					}
-				}
-
-				if let Some(id) = temp_next.strip_suffix("_max") {
-					match subjects.get_mut(id) {
-						Some(subject) => {
-							subject.max = value.parse().unwrap_or(5.0);
-						}
-						None => {
-							let id = String::from(id);
-							subjects.insert(
-								id.clone(),
-								crate::model::Subject {
-									id,
-									name: String::new(),
-									max: value.parse().unwrap_or(5.0),
-									value: None,
-									observations: None,
-									steps: 1.0,
-								},
-							);
-						}
+					Err(err) => {
+						seed::error!(err);
 					}
 				}
 			} else if let Some(temp_next) =
@@ -242,6 +309,7 @@ pub fn init(
 				value: None,
 				observations: None,
 				steps: 1.0,
+				source: SubjectSource::Generated,
 			},
 		);
 	}
@@ -258,6 +326,39 @@ pub fn init(
 				}
 			}
 		}
+	};
+
+	let database_account_string = if let Some(path) = url.path().get(0) {
+		if path == "db_register" {
+			let db_account = String::from(
+				match url
+					.search()
+					.get("db_account")
+					.and_then(|values| values.get(0))
+				{
+					Some(db_account) => db_account,
+					None => "",
+				},
+			);
+
+			if !db_account.is_empty() {
+				orders.after_next_render(|_| {
+					crate::messages::Message::Database(
+						crate::messages::database::Message::BuildRemote(Some(Box::new(
+							crate::messages::Message::Database(
+								crate::messages::database::Message::SyncDatabase,
+							),
+						))),
+					)
+				});
+			}
+
+			db_account
+		} else {
+			String::new()
+		}
+	} else {
+		String::new()
 	};
 
 	return Model {
@@ -278,5 +379,7 @@ pub fn init(
 		graph_end: None,
 		show_points: true,
 		show_grid: true,
+		database_account_string,
+		database_remote: None,
 	};
 }

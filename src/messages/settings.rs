@@ -60,10 +60,11 @@ pub fn update(
 			match model.subjects.get_mut(&id) {
 				Some(subject) => {
 					(*subject).name = name;
+					(*subject).source = crate::model::SubjectSource::User;
 
 					orders.send_msg(crate::messages::Message::SaveStorage {
-						key: format!("subject_{}_name", subject.id.clone()),
-						value: subject.name.clone(),
+						key: format!("subject_{}", subject.id.clone()),
+						value: serde_json::to_string(&subject).unwrap(),
 					});
 				}
 				None => {
@@ -74,11 +75,12 @@ pub fn update(
 						max: 5.0,
 						observations: None,
 						steps: 1.0,
+						source: crate::model::SubjectSource::User,
 					};
 
 					orders.send_msg(crate::messages::Message::SaveStorage {
-						key: format!("subject_{}_name", temp.id),
-						value: temp.name.clone(),
+						key: format!("subject_{}", temp.id),
+						value: serde_json::to_string(&temp).unwrap(),
 					});
 
 					model.subjects.insert(temp.id.clone(), temp);
@@ -105,10 +107,11 @@ pub fn update(
 					match model.subjects.get_mut(&id) {
 						Some(subject) => {
 							(*subject).max = max;
+							(*subject).source = crate::model::SubjectSource::User;
 
 							orders.send_msg(crate::messages::Message::SaveStorage {
-								key: format!("subject_{}_max", subject.id.clone()),
-								value: format!("{}", subject.max.clone()),
+								key: format!("subject_{}", subject.id.clone()),
+								value: serde_json::to_string(&subject).unwrap(),
 							});
 
 							if let Some(val) = subject.value {
@@ -130,13 +133,14 @@ pub fn update(
 								max,
 								observations: None,
 								steps: 1.0,
+								source: crate::model::SubjectSource::User,
 							};
 
 							model.pending_rate.subjects.push(temp.clone());
 
 							orders.send_msg(crate::messages::Message::SaveStorage {
-								key: format!("subject_{}_max", temp.id),
-								value: format!("{}", temp.max),
+								key: format!("subject_{}", temp.id),
+								value: serde_json::to_string(&temp).unwrap(),
 							});
 						}
 					}
@@ -159,10 +163,11 @@ pub fn update(
 					match model.subjects.get_mut(&id) {
 						Some(subject) => {
 							(*subject).steps = steps;
+							(*subject).source = crate::model::SubjectSource::User;
 
 							orders.send_msg(crate::messages::Message::SaveStorage {
-								key: format!("subject_{}_steps", subject.id.clone()),
-								value: format!("{}", subject.steps.clone()),
+								key: format!("subject_{}", subject.id.clone()),
+								value: serde_json::to_string(&subject).unwrap(),
 							});
 						}
 						None => {
@@ -173,13 +178,14 @@ pub fn update(
 								max,
 								observations: None,
 								steps: steps,
+								source: crate::model::SubjectSource::User,
 							};
 
 							model.pending_rate.subjects.push(temp.clone());
 
 							orders.send_msg(crate::messages::Message::SaveStorage {
-								key: format!("subject_{}_steps", temp.id),
-								value: format!("{}", temp.steps),
+								key: format!("subject_{}", temp.id),
+								value: serde_json::to_string(&temp).unwrap(),
 							});
 						}
 					}
@@ -201,11 +207,7 @@ pub fn update(
 
 					if !res {
 						orders.send_msg(crate::messages::Message::DeleteStorage(format!(
-							"subject_{}_name",
-							subject.id.clone()
-						)));
-						orders.send_msg(crate::messages::Message::DeleteStorage(format!(
-							"subject_{}_max",
+							"subject_{}",
 							subject.id.clone()
 						)));
 					}

@@ -13,11 +13,10 @@ pub fn get_bundle(selected_locale: &str) -> fluent::FluentBundle<fluent::FluentR
 	{
 		Some(res) => res,
 		None => {
-			seed::error!(
-				"locale `{}` was not found, fallback to `{}`",
-				selected_locale,
+			seed::error!(format!(
+				"locale `{selected_locale}` was not found, fallback to `{}`",
 				DEFAULT_LOCALE
-			);
+			));
 
 			AVAILABLE_LOCALES
 				.iter()

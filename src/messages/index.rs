@@ -93,6 +93,7 @@ pub fn update(
 					value: None,
 					observations: None,
 					steps: 1.0,
+					source: crate::model::SubjectSource::Generated,
 				});
 			}
 

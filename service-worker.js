@@ -1,5 +1,5 @@
 const APP_NAME = "triton-windstorm";
-const CACHE_VERSION = "1.12.2";
+const CACHE_VERSION = "1.13.0";
 
 const CACHE_PREFIX = APP_NAME + '-' + CACHE_VERSION;
 
@@ -45,26 +45,30 @@ self.addEventListener('activate', function(event) {
 
 self.addEventListener('fetch', function(event) {
 	event.respondWith(
-		caches
-			.match(event.request)
-			.then(function(r) {
-				return r || fetch(event.request).then(function(response) {
-					return caches
-						.open(CACHE_PREFIX)
-						.then(function(cache) {
+
+		fetch(event.request)
+			.then(function(response) {
+				return caches
+					.open(CACHE_PREFIX)
+					.then(function(cache) {
+						if(event.request.method.toUpperCase() !== "HEAD") {
 							cache.put(event.request, response.clone());
-							return response;
-						})
-						.catch(function(error) {
-							throw error;
-						});
-				})
-				.catch(function(error) {
-					throw error;
-				});
+						}
+						return response;
+					})
+					.catch(function(error) {
+						throw error;
+					});
 			})
-			.catch(function(error) {
-				throw error;
+			.catch(function() {
+				caches
+					.match(event.request)
+					.then(function(r) {
+						return r;
+					})
+					.catch(function(error) {
+						throw error;
+					})
 			})
 	);
 });
