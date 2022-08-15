@@ -328,18 +328,25 @@ pub fn init(
 		}
 	};
 
-	let database_account_string = if let Some(path) = url.path().get(0) {
-		if path == "db_register" {
-			let db_account = String::from(
-				match url
-					.search()
-					.get("db_account")
-					.and_then(|values| values.get(0))
-				{
-					Some(db_account) => db_account,
-					None => "",
-				},
-			);
+	let database_account_string = if let Some(path) = url.hash_path().get(0) {
+		if path.starts_with("db_register") {
+
+			let url: Result<seed::browser::url::Url, String> = std::str::FromStr::from_str(path);
+
+			let db_account = if let Ok(url) = url {
+				String::from(
+					match url
+						.search()
+						.get("db_account")
+						.and_then(|values| values.get(0))
+					{
+						Some(db_account) => db_account,
+						None => "",
+					},
+				)
+			} else {
+				String::new()
+			};
 
 			if !db_account.is_empty() {
 				orders.after_next_render(|_| {

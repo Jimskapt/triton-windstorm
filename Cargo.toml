@@ -1,5 +1,5 @@
 [package]
-version = "1.13.1"
+version = "1.13.2"
 name = "triton_windstorm"
 readme = "./README.md"
 edition = "2021"
