@@ -1,5 +1,5 @@
 const APP_NAME = "triton-windstorm";
-const CACHE_VERSION = "1.13.0";
+const CACHE_VERSION = "1.13.1";
 
 const CACHE_PREFIX = APP_NAME + '-' + CACHE_VERSION;
 
