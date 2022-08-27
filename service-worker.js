@@ -1,74 +1,102 @@
 const APP_NAME = "triton-windstorm";
-const CACHE_VERSION = "1.13.2";
+const CACHE_VERSION = "1.13.3";
 
-const CACHE_PREFIX = APP_NAME + '-' + CACHE_VERSION;
+const CACHE_PREFIX = APP_NAME + "-" + CACHE_VERSION;
 
-self.addEventListener('install', function(event) {
+const CONTENT_TO_CACHE = [
+	"./",
+	"./index.html",
+	"./index.css",
+	"./favicon.ico",
+	"./pkg/package.js",
+	"./pkg/package_bg.wasm",
+	"./icons/icon-32.png",
+];
+
+console.log("service-worker", "run");
+
+self.addEventListener("install", function(event) {
+	console.log("service-worker", "install");
+
 	event.waitUntil(
-		caches
-			.open(CACHE_PREFIX)
-			.then(function(cache) {
-				return cache.addAll([
-					'./',
-					'./index.html',
-					'./index.css',
-					'./pkg/package.js',
-					'./pkg/package_bg.wasm',
-					'./icons/icon-32.png',
-				]);
-			})
-			.catch(function(error) {
-				throw error;
-			})
-	)
+		async function() {
+			const cache = await caches.open(CACHE_PREFIX);
+
+			console.log("service-worker", "install", CACHE_PREFIX);
+
+			await cache.addAll(CONTENT_TO_CACHE);
+
+			console.log("service-worker", "install", CONTENT_TO_CACHE);
+		}()
+	);
 });
 
-self.addEventListener('activate', function(event) {
+self.addEventListener("activate", function(event) {
+	console.log("service-worker", "activate");
+
 	event.waitUntil(
 		caches
 			.keys()
 			.then(function(keyList) {
 				return Promise.all(
-					keyList
-						.map(function(key) {
-							if(key != CACHE_PREFIX) {
-								caches.delete(key)
-							}
-						})
+					keyList.map(function(key) {
+						if(key === CACHE_PREFIX) {
+							console.log("service-worker", "activate", "keep", key);
+							return;
+						} else {
+							console.log("service-worker", "activate", "delete", key);
+							return caches.delete(key);
+						}
+					})
 				);
 			})
-			.catch(function(error) {
-				throw error;
+			.catch(function(err) {
+				return new Promise(function(_, reject) {
+					reject(err);
+				});
 			})
 	);
 });
 
-self.addEventListener('fetch', function(event) {
-	event.respondWith(
+self.addEventListener("fetch", function(event) {
+	const request = event.request;
+	console.log("service-worker", "fetch", request.method, request.url);
 
-		fetch(event.request)
-			.then(function(response) {
-				return caches
-					.open(CACHE_PREFIX)
-					.then(function(cache) {
-						if(event.request.method.toUpperCase() !== "HEAD") {
-							cache.put(event.request, response.clone());
-						}
-						return response;
-					})
-					.catch(function(error) {
-						throw error;
-					});
-			})
-			.catch(function() {
-				caches
-					.match(event.request)
-					.then(function(r) {
-						return r;
-					})
-					.catch(function(error) {
-						throw error;
-					})
-			})
+	event.respondWith(
+		async function() {
+			const found_request = await caches.match(request);
+
+			if(found_request) {
+				console.log("service-worker", "fetch", request.method, request.url, "found in cache");
+
+				return found_request;
+			} else {
+				console.log("service-worker", "fetch", request.method, request.url, "not found in cache");
+
+				const response = await fetch(request);
+
+				const cache_control = function() {
+					const value = response.headers.get("Cache-Control");
+
+					if(value !== null && value !== undefined) {
+						return value.toLowerCase();
+					} else {
+						return "";
+					}
+				}();
+
+				if(request.method.toUpperCase() !== "HEAD" && cache_control === "no-cache") {
+					const cache = await caches.open(CACHE_PREFIX);
+
+					console.log("service-worker", "fetch", "caching", request.method, request.url, "Cache-Control : " + cache_control);
+
+					cache.put(request, response.clone());
+				} else {
+					console.log("service-worker", "fetch", "no caching", request.method, request.url, "Cache-Control : " + cache_control);
+				}
+
+				return response;
+			}
+		}()
 	);
 });

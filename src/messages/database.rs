@@ -74,7 +74,7 @@ pub fn update(
 
 							client_remote
 								.show_connect_overlay(format!(
-									"{}/db_register?db_account={db_account}",
+									"{}index.html#/db_register?db_account={db_account}",
 									pontus_onyx_client_root_uri(),
 								))
 								.await

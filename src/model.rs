@@ -330,7 +330,6 @@ pub fn init(
 
 	let database_account_string = if let Some(path) = url.hash_path().get(0) {
 		if path.starts_with("db_register") {
-
 			let url: Result<seed::browser::url::Url, String> = std::str::FromStr::from_str(path);
 
 			let db_account = if let Ok(url) = url {

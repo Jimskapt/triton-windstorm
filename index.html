@@ -10,7 +10,7 @@
 	<link rel="shortcut icon" href="icons/icon-32.png" type="image/png">
 	<script>
 	function pontus_onyx_client_root_uri() {
-		return "";
+		return "/";
 	}
 	</script>
 </head>
@@ -21,25 +21,32 @@
 			<h1>Triton Windstorm</h1>
 		</header>
 		<main>
-			<article class="message error">This webapp needs Javascript enabled in your browser order to works.</article>
+			<article class="message error">This webapp needs <a href="https://enable-javascript.com/" target="_blank">Javascript enabled</a> in your browser order to works.</article>
 		</main>
 	</noscript>
 
 	<section id="app"></section>
 
 	<script type="module">
-		import init from './pkg/package.js';
-		init('./pkg/package_bg.wasm');
+		import init from "./pkg/package.js";
+		init("./pkg/package_bg.wasm");
 	</script>
 
 	<script>
-	if ('serviceWorker' in navigator) {
+	if ("serviceWorker" in navigator) {
 		navigator
 			.serviceWorker
-			.register('./service-worker.js', {scope: './'})
-			.catch(function(error) {
+			.register("./service-worker.js", {
+				scope: pontus_onyx_client_root_uri()
+			})
+			.then(function (registration) {
+				console.info("./service-worker.js successfully registered :", registration);
+			})
+			.catch(function (error) {
 				console.error("Service Worker register error :", error);
 			});
+	} else {
+		console.info("serviceWorker is not available on this browser");
 	}
 	</script>
 </body>
