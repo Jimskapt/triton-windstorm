@@ -7,7 +7,6 @@ const CONTENT_TO_CACHE = [
 	"./",
 	"./index.html",
 	"./index.css",
-	"./favicon.ico",
 	"./pkg/package.js",
 	"./pkg/package_bg.wasm",
 	"./icons/icon-32.png",
@@ -30,7 +29,6 @@ self.addEventListener("install", function(event) {
 self.addEventListener("activate", function(event) {
 	console.log("service-worker", "activate");
 
-	/*
 	event.waitUntil(
 		caches
 			.keys()
@@ -48,7 +46,6 @@ self.addEventListener("activate", function(event) {
 				);
 			})
 	);
-	*/
 });
 
 self.addEventListener("fetch", function(event) {
