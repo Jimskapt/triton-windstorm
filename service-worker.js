@@ -1,5 +1,5 @@
 const APP_NAME = "triton-windstorm";
-const CACHE_VERSION = "1.13.3";
+const CACHE_VERSION = "1.13.4";
 
 const CACHE_PREFIX = APP_NAME + "-" + CACHE_VERSION;
 
@@ -7,13 +7,10 @@ const CONTENT_TO_CACHE = [
 	"./",
 	"./index.html",
 	"./index.css",
-	"./favicon.ico",
 	"./pkg/package.js",
 	"./pkg/package_bg.wasm",
 	"./icons/icon-32.png",
 ];
-
-console.log("service-worker", "run");
 
 self.addEventListener("install", function(event) {
 	console.log("service-worker", "install");
@@ -22,11 +19,9 @@ self.addEventListener("install", function(event) {
 		async function() {
 			const cache = await caches.open(CACHE_PREFIX);
 
-			console.log("service-worker", "install", CACHE_PREFIX);
+			console.log("service-worker", "install", CACHE_PREFIX, CONTENT_TO_CACHE);
 
 			await cache.addAll(CONTENT_TO_CACHE);
-
-			console.log("service-worker", "install", CONTENT_TO_CACHE);
 		}()
 	);
 });
@@ -49,11 +44,6 @@ self.addEventListener("activate", function(event) {
 						}
 					})
 				);
-			})
-			.catch(function(err) {
-				return new Promise(function(_, reject) {
-					reject(err);
-				});
 			})
 	);
 });
@@ -79,13 +69,13 @@ self.addEventListener("fetch", function(event) {
 					const value = response.headers.get("Cache-Control");
 
 					if(value !== null && value !== undefined) {
-						return value.toLowerCase();
+						return value.trim().toLowerCase();
 					} else {
 						return "";
 					}
 				}();
 
-				if(request.method.toUpperCase() !== "HEAD" && cache_control === "no-cache") {
+				if(request.method.toUpperCase() !== "HEAD" && cache_control !== "no-cache") {
 					const cache = await caches.open(CACHE_PREFIX);
 
 					console.log("service-worker", "fetch", "caching", request.method, request.url, "Cache-Control : " + cache_control);
